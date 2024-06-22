@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "tpm",
+	"version": "${version}",
+	"name": "tpm",
+	"description": "一个用于在服务器中给予普通玩家 TP 权限，但不至于让玩家随意 TP 别人的模组。",
+	"authors": [
+		"kmar"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "AGPL-3.0-or-later",
+	"icon": "assets/tpm/icon.png",
+	"environment": "server",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "top.kmar.mc.tpm.Tpm",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
