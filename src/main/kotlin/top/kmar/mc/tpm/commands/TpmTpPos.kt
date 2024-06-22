@@ -88,31 +88,6 @@ object TpmTpPos {
 
 }
 
-object WorldLevelSuggestionProvider : SuggestionProvider<CommandSourceStack> {
-
-    override fun getSuggestions(
-        context: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder
-    ): CompletableFuture<Suggestions> {
-        val server = context.source.server
-        val input = context.input.lowercase().split(' ').filter { it.isNotEmpty() }
-        val isDigit = input.size == 2 && input.last().all { it == '-' || it == '.' || it.isDigit() }
-        if (!isDigit) {
-            for (level in server.allLevels) {
-                val content = level.dimension().location().toString()
-                if (content.contains(input.last())) {
-                    builder.suggest(content)
-                }
-            }
-        } else if (input.size == 1) {
-            for (level in server.allLevels) {
-                builder.suggest(level.dimension().location().toString())
-            }
-        }
-        return builder.buildFuture()
-    }
-
-}
-
 object DoublePosSuggestionProvider : SuggestionProvider<CommandSourceStack> {
 
     override fun getSuggestions(
