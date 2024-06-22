@@ -212,7 +212,7 @@ object TpmTpAsk {
         } else {
             player.sendSystemMessage(
                 Component.literal("正在请求传送到 ")
-                    .append(player.name)
+                    .append(targetPlayer.name)
                     .append(" ")
                     .append(clickableButton("[取消]", "/tpcancel"))
             )
