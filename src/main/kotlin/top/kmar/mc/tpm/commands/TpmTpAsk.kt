@@ -48,7 +48,7 @@ object TpmTpAsk {
         dispatcher.register(
             literal("tpaccept").executes { context ->
                 val player = context.source.player ?: return@executes 0
-                val list = TpRequestManager.findReceiveBy(player)
+                val list = TpRequestManager.findReceiveByAndIsTarget(player)
                 if (list.isEmpty()) {
                     player.sendSystemMessage(TpmCommand.errorText("没有可接受的传送请求"))
                 } else {
@@ -168,7 +168,8 @@ object TpmTpAsk {
         player.sendSystemMessage(
             genReceiverOpMenu(
                 targetPlayer,
-                Component.empty().append(targetPlayer.name).append(" 正在请求将您传送到他的位置")
+                Component.empty().append(targetPlayer.name).append(" 正在请求将您传送到他的位置"),
+                false
             )
         )
         return 1
@@ -216,18 +217,22 @@ object TpmTpAsk {
                     .append(clickableButton("[取消]", "/tpcancel"))
             )
             targetPlayer.sendSystemMessage(
-                genReceiverOpMenu(player, Component.empty().append(player.name).append(" 正在请求传送到您 "))
+                genReceiverOpMenu(player, Component.empty().append(player.name).append(" 正在请求传送到您 "), true)
             )
         }
         return 1
     }
 
+    /**
+     * @param allMenu 是否生成完整菜单
+     */
     @Suppress("SpellCheckingInspection")
-    private fun genReceiverOpMenu(sender: ServerPlayer, component: MutableComponent): MutableComponent {
-        return component.append(clickableButton("[接受]", "/tpaccept ${sender.name.string}"))
+    private fun genReceiverOpMenu(sender: ServerPlayer, component: MutableComponent, allMenu: Boolean): MutableComponent {
+        val base = component.append(clickableButton("[接受]", "/tpaccept ${sender.name.string}"))
             .append(" ")
             .append(clickableButton("[拒绝]", "/tpreject ${sender.name.string}"))
-            .append(" ")
+        if (!allMenu) return base
+        return base.append(" ")
             .append(clickableButton("[接受全部]", "/tpaccept"))
             .append(" ")
             .append(clickableButton("[拒绝全部]", "/tpreject"))

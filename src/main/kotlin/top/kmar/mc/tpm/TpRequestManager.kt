@@ -63,7 +63,7 @@ object TpRequestManager {
      */
     @JvmStatic
     fun appendRequest(request: TpRequest, force: Boolean, skipWrite: Boolean = false): Boolean {
-        var isInList = false
+        var isInList: Boolean
         lock.read {
             isInList = request in tpRequestList
             if (isInList && !force) {
@@ -89,6 +89,13 @@ object TpRequestManager {
     fun findReceiveBy(player: ServerPlayer): List<TpRequest> {
         return lock.read {
             tpRequestList.filter { it.isReceiver(player) }
+        }
+    }
+
+    @JvmStatic
+    fun findReceiveByAndIsTarget(player: ServerPlayer): List<TpRequest> {
+        return lock.read {
+            tpRequestList.filter { it.isReceiver(player) && it.isTargetPlayer(player) }
         }
     }
 
