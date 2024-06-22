@@ -2,9 +2,11 @@ package top.kmar.mc.tpm.commands
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
+import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
+import net.minecraft.commands.Commands
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
@@ -50,6 +52,14 @@ object TpmCommand {
         return Component.literal(text)
             .withStyle(ChatFormatting.GRAY)
     }
+
+    @JvmStatic
+    internal val worldPosArgument: Array<RequiredArgumentBuilder<CommandSourceStack, *>>
+        get() = arrayOf(
+            Commands.argument("x", DoubleArgumentType.doubleArg()),
+            Commands.argument("y", DoubleArgumentType.doubleArg()),
+            Commands.argument("z", DoubleArgumentType.doubleArg())
+        )
 
     /** 构建一条指令 */
     @JvmStatic

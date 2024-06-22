@@ -8,11 +8,10 @@ import top.kmar.mc.tpm.save.tpmHome
 
 object TpmHome {
 
-    @Suppress("SpellCheckingInspection")
     fun registry(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(
             Commands.literal("tphome").executes { context ->
-                val player = context.source.player ?: return@executes 0
+                val player = context.source.playerOrException
                 val tpmHome = player.tpmHome
                 if (tpmHome == null) {
                     player.sendSystemMessage(

@@ -19,7 +19,6 @@ import top.kmar.mc.tpm.save.readOfflineData
 
 object TpmTpAsk {
 
-    @Suppress("SpellCheckingInspection")
     fun registry(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(
             literal("tpa").then(
@@ -47,7 +46,7 @@ object TpmTpAsk {
         )
         dispatcher.register(
             literal("tpaccept").executes { context ->
-                val player = context.source.player ?: return@executes 0
+                val player = context.source.playerOrException
                 val list = TpRequestManager.findReceiveByAndIsTarget(player)
                 if (list.isEmpty()) {
                     player.sendSystemMessage(TpmCommand.errorText("没有可接受的传送请求"))
@@ -59,7 +58,7 @@ object TpmTpAsk {
             }.then(
                 argument("player", EntityArgument.player())
                     .executes { context ->
-                        val player = context.source.player ?: return@executes 0
+                        val player = context.source.playerOrException
                         val otherPlayer = EntityArgument.getPlayer(context, "player")
                         val request = TpRequestManager.find(otherPlayer, player)
                         if (request == null) {
@@ -73,7 +72,7 @@ object TpmTpAsk {
         )
         dispatcher.register(
             literal("tpreject").executes { context ->
-                val player = context.source.player ?: return@executes 0
+                val player = context.source.playerOrException
                 val list = TpRequestManager.findReceiveBy(player)
                 if (list.isEmpty()) {
                     player.sendSystemMessage(TpmCommand.errorText("没有可拒绝的传送请求"))
@@ -85,7 +84,7 @@ object TpmTpAsk {
             }.then(
                 argument("player", EntityArgument.player())
                     .executes { context ->
-                        val player = context.source.player ?: return@executes 0
+                        val player = context.source.playerOrException
                         val otherPlayer = EntityArgument.getPlayer(context, "player")
                         val request = TpRequestManager.find(otherPlayer, player)
                         if (request == null) {
@@ -110,7 +109,7 @@ object TpmTpAsk {
         )
         dispatcher.register(
             literal("tpcancel").executes { context ->
-                val player = context.source.player ?: return@executes 0
+                val player = context.source.playerOrException
 
                 val request = TpRequestManager.findSendBy(player)
                 if (request == null) {
@@ -135,11 +134,11 @@ object TpmTpAsk {
         )
     }
 
-    @Suppress("SpellCheckingInspection")
+    @Suppress("SameReturnValue")
     @JvmStatic
     private fun executeTphereCommand(context: CommandContext<CommandSourceStack>, force: Boolean): Int {
         @Suppress("DuplicatedCode")
-        val targetPlayer = context.source.player ?: return 0
+        val targetPlayer = context.source.playerOrException
         val player = EntityArgument.getPlayer(context, "player")
         if (player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE) {
             targetPlayer.sendSystemMessage(TpmCommand.grayText("您的传送请求已被自动拒绝"))
@@ -175,10 +174,10 @@ object TpmTpAsk {
         return 1
     }
 
-    @Suppress("SpellCheckingInspection")
+    @Suppress("SameReturnValue")
     @JvmStatic
     private fun executeTpaCommand(context: CommandContext<CommandSourceStack>, force: Boolean): Int {
-        val player = context.source.player ?: return 0
+        val player = context.source.playerOrException
         val targetPlayer = EntityArgument.getPlayer(context, "player")
         if (targetPlayer.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE) {
             player.sendSystemMessage(TpmCommand.grayText("您的传送请求已被自动拒绝"))
@@ -226,7 +225,6 @@ object TpmTpAsk {
     /**
      * @param allMenu 是否生成完整菜单
      */
-    @Suppress("SpellCheckingInspection")
     private fun genReceiverOpMenu(sender: ServerPlayer, component: MutableComponent, allMenu: Boolean): MutableComponent {
         val base = component.append(clickableButton("[接受]", "/tpaccept ${sender.name.string}"))
             .append(" ")

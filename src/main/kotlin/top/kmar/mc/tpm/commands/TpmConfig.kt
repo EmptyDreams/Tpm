@@ -2,18 +2,17 @@ package top.kmar.mc.tpm.commands
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.BoolArgumentType
-import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.DimensionArgument
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.commands.config.BooleanConfig
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
+import top.kmar.mc.tpm.data.DoubleBlockPos
 import top.kmar.mc.tpm.save.TpmWorldData
 import top.kmar.mc.tpm.save.readOfflineData
 import top.kmar.mc.tpm.save.setOfflineData
@@ -27,20 +26,14 @@ object TpmConfig {
         this["home"] = ConfigValue(
             commands = {
                 it.executes { context ->
-                    val player = context.source.player ?: return@executes 0
+                    val player = context.source.playerOrException
                     player.tpmHome = DimensionalBlockPos(player.serverLevel(), player.x, player.y + 0.5, player.z)
                     player.sendSystemMessage(TpmCommand.grayText("已将家设置到当前位置"))
                     1
-                }.then(TpmCommand.joinArguments(
-                    Commands.argument("x", DoubleArgumentType.doubleArg()),
-                    Commands.argument("y", DoubleArgumentType.doubleArg()),
-                    Commands.argument("z", DoubleArgumentType.doubleArg())
-                ) { context ->
+                }.then(TpmCommand.joinArguments(*TpmCommand.worldPosArgument) { context ->
                     @Suppress("DuplicatedCode")
-                    val player = context.source.player ?: return@joinArguments 0
-                    val x = DoubleArgumentType.getDouble(context, "x")
-                    val y = DoubleArgumentType.getDouble(context, "y")
-                    val z = DoubleArgumentType.getDouble(context, "z")
+                    val player = context.source.playerOrException
+                    val (x, y, z) = DoubleBlockPos.readFromContext(context)
                     player.tpmHome = DimensionalBlockPos(player.serverLevel(), x, y, z)
                     1
                 })
@@ -56,7 +49,7 @@ object TpmConfig {
                 it.then(
                     Commands.argument("value", BoolArgumentType.bool())
                         .executes { context ->
-                            val player = context.source.player ?: return@executes 0
+                            val player = context.source.playerOrException
                             val value = BoolArgumentType.getBool(context, "value")
                             player.setOfflineData("auto_reject", BooleanConfig.from(value))
                             if (value && player.readOfflineData("auto_accept", BooleanConfig.builder) == BooleanConfig.TRUE) {
@@ -80,7 +73,7 @@ object TpmConfig {
                 it.then(
                     Commands.argument("value", BoolArgumentType.bool())
                         .executes { context ->
-                            val player = context.source.player ?: return@executes 0
+                            val player = context.source.playerOrException
                             val value = BoolArgumentType.getBool(context, "value")
                             player.setOfflineData("auto_accept", BooleanConfig.from(value))
                             if (value && player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE) {
@@ -103,7 +96,7 @@ object TpmConfig {
             commands = {
                 it.requires { source -> source.hasPermission(3) }
                     .executes { context ->
-                        val player = context.source.player ?: return@executes 0
+                        val player = context.source.playerOrException
                         val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder) ?: MultiLevelBlockPos()
                         posList.put(DimensionalBlockPos(player.serverLevel(), player.x, player.y + 0.5, player.z))
                         TpmWorldData["main"] = posList
@@ -112,12 +105,12 @@ object TpmConfig {
                     }
                     .then(TpmCommand.joinArguments(
                         Commands.argument("level", DimensionArgument.dimension()),
-                        Commands.argument("pos", BlockPosArgument.blockPos())
+                        *TpmCommand.worldPosArgument
                     ) { context ->
                         val level = DimensionArgument.getDimension(context, "level")
-                        val pos = BlockPosArgument.getBlockPos(context, "pos")
+                        val (x, y, z) = DoubleBlockPos.readFromContext(context)
                         val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder) ?: MultiLevelBlockPos()
-                        posList.put(DimensionalBlockPos(level, pos))
+                        posList.put(DimensionalBlockPos(level, x, y, z))
                         TpmWorldData["main"] = posList
                         1
                     })
@@ -143,7 +136,7 @@ object TpmConfig {
         configMap.forEach { (key, config) ->
             var base = Commands.literal(key)
             rootGet = rootGet.then(base.executes { context ->
-                val player = context.source.player ?: return@executes 0
+                val player = context.source.playerOrException
                 readConfig(player, key)
                 1
             })

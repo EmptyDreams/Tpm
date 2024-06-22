@@ -11,7 +11,7 @@ object TpmTpSpawn {
     fun registry(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(
             Commands.literal("tpspawn").executes { context ->
-                val player = context.source.player ?: return@executes 0
+                val player = context.source.playerOrException
                 val respawnPos = player.respawnPosition
                 val respawnDimension = player.respawnDimension
                 if (respawnPos != null) {

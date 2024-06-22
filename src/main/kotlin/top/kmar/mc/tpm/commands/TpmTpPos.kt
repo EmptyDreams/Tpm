@@ -1,7 +1,6 @@
 package top.kmar.mc.tpm.commands
 
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
@@ -11,13 +10,13 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.Commands.literal
 import net.minecraft.commands.arguments.DimensionArgument
-import net.minecraft.commands.arguments.coordinates.BlockPosArgument
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos.Companion.teleportTo
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
+import top.kmar.mc.tpm.data.DoubleBlockPos
 import top.kmar.mc.tpm.localName
 import top.kmar.mc.tpm.save.TpmWorldData
 import java.util.concurrent.CompletableFuture
@@ -29,37 +28,30 @@ object TpmTpPos {
         dispatcher.register(
             literal("tpp")
                 .executes { context ->
-                    val player = context.source.player ?: return@executes 0
+                    val player = context.source.playerOrException
                     val level = player.serverLevel()
                     player.teleportToMain(level)
                     1
-                }.then(TpmCommand.joinArguments(
-                    argument("pos", BlockPosArgument.blockPos())
-                ) { context ->
-                    val player = context.source.player ?: return@joinArguments 0
-                    val pos = BlockPosArgument.getBlockPos(context, "pos")
-                    player.teleportTo(pos)
-                    player.sendSystemMessage(TpmCommand.grayText("成功传送到 ${pos.x} ${pos.y} ${pos.z}"))
+                }.then(TpmCommand.joinArguments(*TpmCommand.worldPosArgument) { context ->
+                    val player = context.source.playerOrException
+                    val (x, y, z) = DoubleBlockPos.readFromContext(context)
+                    player.teleportTo(x, y, z)
+                    player.sendSystemMessage(TpmCommand.grayText("成功传送到 $x $y $z"))
                     1
                 }).then(
                     TpmCommand.joinArguments(
                         argument("level", DimensionArgument.dimension())
                             .suggests(WorldLevelSuggestionProvider)
                             .executes { context ->
-                                val player = context.source.player ?: return@executes 0
+                                val player = context.source.playerOrException
                                 val level = DimensionArgument.getDimension(context, "level")
                                 player.teleportToMain(level)
                                 1
                             },
-                        argument("x", DoubleArgumentType.doubleArg()),
-                        argument("y", DoubleArgumentType.doubleArg()),
-                        argument("z", DoubleArgumentType.doubleArg())
+                        *TpmCommand.worldPosArgument
                     ) { context ->
-                        @Suppress("DuplicatedCode")
-                        val player = context.source.player ?: return@joinArguments 0
-                        val x = DoubleArgumentType.getDouble(context, "x")
-                        val y = DoubleArgumentType.getDouble(context, "y")
-                        val z = DoubleArgumentType.getDouble(context, "z")
+                        val player = context.source.playerOrException
+                        val (x, y, z) = DoubleBlockPos.readFromContext(context)
                         val serverLevel = DimensionArgument.getDimension(context, "level")
                         if (serverLevel == null) {
                             player.sendSystemMessage(TpmCommand.errorText("输入的维度不存在"))
