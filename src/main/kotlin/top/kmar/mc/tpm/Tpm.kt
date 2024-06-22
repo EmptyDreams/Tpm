@@ -8,7 +8,6 @@ import top.kmar.mc.tpm.commands.TpmCommand
 import top.kmar.mc.tpm.save.TpmWorldData
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 
 object Tpm : ModInitializer {
 
@@ -16,8 +15,7 @@ object Tpm : ModInitializer {
     val logger: Logger = LoggerFactory.getLogger("TPM")
 
     @JvmStatic
-    var scheduledExecutor: ScheduledExecutorService = initScheduledExecutor()
-        private set
+    val scheduledExecutor: ScheduledExecutorService by lazy(LazyThreadSafetyMode.NONE) { initScheduledExecutor() }
 
     override fun onInitialize() {
         TpmWorldData.initWorld()
@@ -28,19 +26,8 @@ object Tpm : ModInitializer {
         }
     }
 
-    @JvmStatic
-    fun resetExecutor() {
-        scheduledExecutor.shutdownNow()
-        val success = scheduledExecutor.awaitTermination(30, TimeUnit.SECONDS)
-        if (!success) {
-            logger.error("严重错误！！！TPM 时钟退出失败")
-            throw AssertionError("正常情况下不应当进入此分支")
-        }
-        scheduledExecutor = initScheduledExecutor()
-    }
-
+    @Suppress("Since15")
     private fun initScheduledExecutor() = try {
-        @Suppress("Since15")
         val executor = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory())
         logger.info("检测到虚拟线程可用，TPM 时钟迁移到虚拟线程中执行")
         executor

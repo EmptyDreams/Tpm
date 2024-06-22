@@ -49,8 +49,9 @@ object TpRequestManager {
             if (scheduledFuture?.isDone == true) {
                 future.set(null)
             } else {
-                logger.error("TPA 时刻管理任务注销失败，尝试重置线程池！")
-                Tpm.resetExecutor()
+                Tpm.scheduledExecutor.shutdownNow()
+                logger.error("严重警告：TPA 时刻管理任务注销失败！")
+                throw AssertionError("代码不应进入此分支")
             }
         }
     }
