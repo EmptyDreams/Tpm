@@ -26,47 +26,45 @@ object TpmTpPos {
     @JvmStatic
     fun registry(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(
-            literal("tpp")
-                .executes { context ->
-                    val player = context.source.playerOrException
-                    val level = player.serverLevel()
-                    player.teleportToMain(level)
-                    1
-                }.then(TpmCommand.joinArguments(*TpmCommand.worldPosArgument) { context ->
+            literal("tpp").executes { context ->
+                val player = context.source.playerOrException
+                val level = player.serverLevel()
+                player.teleportToMain(level)
+                1
+            }.then(
+                TpmCommand.joinArguments(
+                    *TpmCommand.worldPosArgument, suggestion = DoublePosSuggestionProvider
+                ) { context ->
                     val player = context.source.playerOrException
                     val (x, y, z) = DoubleBlockPos.readFromContext(context)
                     player.teleportTo(x, y, z)
                     player.sendSystemMessage(TpmCommand.grayText("成功传送到 $x $y $z"))
                     1
-                }).then(
-                    TpmCommand.joinArguments(
-                        argument("level", DimensionArgument.dimension())
-                            .suggests(WorldLevelSuggestionProvider)
-                            .executes { context ->
-                                val player = context.source.playerOrException
-                                val level = DimensionArgument.getDimension(context, "level")
-                                player.teleportToMain(level)
-                                1
-                            },
-                        *TpmCommand.worldPosArgument
-                    ) { context ->
+                }
+            ).then(
+                TpmCommand.joinArguments(
+                    argument("level", DimensionArgument.dimension()).executes { context ->
                         val player = context.source.playerOrException
-                        val (x, y, z) = DoubleBlockPos.readFromContext(context)
-                        val serverLevel = DimensionArgument.getDimension(context, "level")
-                        if (serverLevel == null) {
-                            player.sendSystemMessage(TpmCommand.errorText("输入的维度不存在"))
-                        } else {
-                            player.teleportTo(serverLevel, x, y, z, player.yRot, player.xRot)
-                            player.sendSystemMessage(
-                                Component.literal("成功传送到 ")
-                                    .append(Component.translatable(serverLevel.localName))
-                                    .append(" $x $y $z")
-                                    .withStyle(ChatFormatting.GRAY)
-                            )
-                        }
+                        val level = DimensionArgument.getDimension(context, "level")
+                        player.teleportToMain(level)
                         1
+                    }, *TpmCommand.worldPosArgument
+                ) { context ->
+                    val player = context.source.playerOrException
+                    val (x, y, z) = DoubleBlockPos.readFromContext(context)
+                    val serverLevel = DimensionArgument.getDimension(context, "level")
+                    if (serverLevel == null) {
+                        player.sendSystemMessage(TpmCommand.errorText("输入的维度不存在"))
+                    } else {
+                        player.teleportTo(serverLevel, x, y, z, player.yRot, player.xRot)
+                        player.sendSystemMessage(
+                            Component.literal("成功传送到 ").append(Component.translatable(serverLevel.localName))
+                                .append(" $x $y $z").withStyle(ChatFormatting.GRAY)
+                        )
                     }
-                )
+                    1
+                }
+            )
         )
     }
 
@@ -93,16 +91,11 @@ object TpmTpPos {
 object WorldLevelSuggestionProvider : SuggestionProvider<CommandSourceStack> {
 
     override fun getSuggestions(
-        context: CommandContext<CommandSourceStack>,
-        builder: SuggestionsBuilder
+        context: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder
     ): CompletableFuture<Suggestions> {
         val server = context.source.server
-        val player = context.source.playerOrException
         val input = context.input.lowercase().split(' ').filter { it.isNotEmpty() }
         val isDigit = input.size == 2 && input.last().all { it == '-' || it == '.' || it.isDigit() }
-        if (input.size == 1) {
-            builder.suggest(player.x.toString())
-        }
         if (!isDigit) {
             for (level in server.allLevels) {
                 val content = level.dimension().location().toString()
@@ -113,6 +106,37 @@ object WorldLevelSuggestionProvider : SuggestionProvider<CommandSourceStack> {
         } else if (input.size == 1) {
             for (level in server.allLevels) {
                 builder.suggest(level.dimension().location().toString())
+            }
+        }
+        return builder.buildFuture()
+    }
+
+}
+
+object DoublePosSuggestionProvider : SuggestionProvider<CommandSourceStack> {
+
+    override fun getSuggestions(
+        context: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder
+    ): CompletableFuture<Suggestions> {
+        val player = context.source.playerOrException
+        val input = context.input.lowercase().split(" ").filter { it.isNotEmpty() }
+        if (!context.input.endsWith(' ') || (input.size != 1 && !input[1].all { it == '-' || it == '.' || it.isDigit() })) {
+            return builder.buildFuture()
+        }
+        when (input.size) {
+            1 -> {
+                builder.suggest("${player.x}")
+                builder.suggest("${player.x} ${player.y}")
+                builder.suggest("${player.x} ${player.y} ${player.z}")
+            }
+
+            2 -> {
+                builder.suggest("${player.y}")
+                builder.suggest("${player.y} ${player.z}")
+            }
+
+            3 -> {
+                builder.suggest("${player.z}")
             }
         }
         return builder.buildFuture()
