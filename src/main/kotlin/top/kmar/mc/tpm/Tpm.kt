@@ -40,6 +40,7 @@ object Tpm : ModInitializer {
     }
 
     private fun initScheduledExecutor() = try {
+        @Suppress("Since15")
         val executor = Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory())
         logger.info("检测到虚拟线程可用，TPM 时钟迁移到虚拟线程中执行")
         executor

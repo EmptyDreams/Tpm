@@ -103,10 +103,4 @@ object TpmCommand {
         teleportTo(level, pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), yRot, xRot)
     }
 
-    /** 将玩家传送到当前世界指定坐标 */
-    @JvmStatic
-    internal fun ServerPlayer.teleportTo(pos: BlockPos) {
-        teleportTo(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
-    }
-
 }

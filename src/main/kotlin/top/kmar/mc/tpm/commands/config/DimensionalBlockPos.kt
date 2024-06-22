@@ -1,7 +1,6 @@
 package top.kmar.mc.tpm.commands.config
 
 import net.minecraft.ChatFormatting
-import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
@@ -18,8 +17,6 @@ data class DimensionalBlockPos(
     val y: Double,
     val z: Double
 ) : TpmWorldData.NBTSerializable {
-
-    constructor(level: ServerLevel, pos: BlockPos) : this(level, pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
 
     constructor(level: ServerLevel, x: Double, y: Double, z: Double) : this(level.dimension().location(), x, y, z)
 
