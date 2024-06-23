@@ -98,7 +98,7 @@ object TpmCommand {
         )
         targetPlayer.sendSystemMessage(
             Component.literal("已将 ")
-                .append(targetPlayer.name)
+                .append(name)
                 .append(" 传送到您")
                 .withStyle(ChatFormatting.GRAY)
         )
