@@ -31,18 +31,58 @@
 + `tpspawn`: 传送到重生点
 + `tpconfig set`: 调整设置
 + `tpconfig get`: 读取设置
++ `tpm set`: 修改服务器指定设置
++ `tpm get`: 读取服务器指定设置
++ `tpm set person <player>`: 修改指定玩家的指定配置（要求 3 级管理员）
 + `tpaccept [player]`: 接受指定玩家/所有人发起的传送请求（对于 `tphere`，必须携带 `player` 参数）
 + `tpreject [player]`: 拒绝指定玩具/所有人发起的传送请求
 
-可调参数列表（通过 `tpconfig` 调整）：
+普通用户可调参数列表（通过 `tpconfig` 调整）：
 
-+ `home`: 无权限要求，用于设置家的坐标<br/>
++ `home`: 用于设置家的坐标<br/>
     调用方式：`tpconfig set home`
-+ `auto_reject`: 无权限要求，用于开启或关闭自动拒绝传送请求的功能<br/>
++ `auto_reject`: 用于开启或关闭自动拒绝传送请求的功能<br/>
     调用方式：`tpconfig set auto_reject true/false`
-+ `auto_accept`: 无权限要求，用于开启或关闭自动接受传送请求的功能<br/>
++ `auto_accept`: 用于开启或关闭自动接受传送请求的功能<br/>
     调用方式：`tpconfig set auto_accept true/false`<br/>
     注：不支持自动接受 `tphere` 发起的传送请求
-+ `main`: 要求 3 级管理员权限，用于设置指定世界的主城坐标<br/>
-    调用方式：`tpconfig set main [level] [pos]`<br/>
-    注：`level` 和 `pos` 要么都填，要么都不填，不填表示设置到当前位置
+
+管理员可调参数列表（通过`tpm`）
+
++ `main`: 用于设置指定世界的主城坐标<br/>
+  调用方式：`tpm set main [level] [pos]`<br/>
+  注：`level` 和 `pos` 要么都填，要么都不填，不填表示设置到当前位置
+
+## 配置文件
+
+配置存储在 `/config/tpm.json` 文件中，若文件不存在将会自动生成，其中会包含一个格式范例（建议修改时将其删除），配置文件示例如下：
+
+```json
+{
+  "version": 1,
+  "default": {
+    "auto_accept": [
+      {
+        "regex": "^bot_",
+        "value": true
+      }
+    ],
+    "auto_reject": [
+      {
+        "regex": ".*",
+        "value": false
+      }
+    ],
+    "home": [
+      {
+        "regex": ".*",
+        "value": ["minecraft:overworld", 114514, 75.3, 415411]
+      }
+    ]
+  }
+}
+```
+
+其中每一项数组中越靠前的优先级越大，`regex` 使用正则表达式匹配玩家名称。如果一个玩家 `auto_reject` 和 `auto_accept` 均为 `true`，则 `auto_reject` 生效。
+
+所有布尔类型的全局缺省值均为 `false`，非基本类型的全局缺省值均为 `null`。上述 `json` 仅为范例，实际使用中建议删除与全局缺省值相同的配置（会影响性能）。
