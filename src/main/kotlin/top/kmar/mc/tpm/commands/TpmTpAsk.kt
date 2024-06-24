@@ -134,12 +134,15 @@ object TpmTpAsk {
         )
     }
 
-    @Suppress("SameReturnValue")
+    @Suppress("SameReturnValue", "DuplicatedCode")
     @JvmStatic
     private fun executeTphereCommand(context: CommandContext<CommandSourceStack>, force: Boolean): Int {
-        @Suppress("DuplicatedCode")
         val targetPlayer = context.source.playerOrException
         val player = EntityArgument.getPlayer(context, "player")
+        if (player == targetPlayer) {
+            player.sendSystemMessage(TpmCommand.errorText("传送自己听起来像是未来的科技，目前我们的魔法还不足以让你和自己玩捉迷藏。"))
+            return 0
+        }
         if (player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE) {
             targetPlayer.sendSystemMessage(TpmCommand.grayText("您的传送请求已被自动拒绝"))
             return 1
@@ -174,11 +177,15 @@ object TpmTpAsk {
         return 1
     }
 
-    @Suppress("SameReturnValue")
+    @Suppress("SameReturnValue", "DuplicatedCode")
     @JvmStatic
     private fun executeTpaCommand(context: CommandContext<CommandSourceStack>, force: Boolean): Int {
         val player = context.source.playerOrException
         val targetPlayer = EntityArgument.getPlayer(context, "player")
+        if (player == targetPlayer) {
+            player.sendSystemMessage(TpmCommand.errorText("传送自己听起来像是未来的科技，目前我们的魔法还不足以让你和自己玩捉迷藏。"))
+            return 0
+        }
         if (targetPlayer.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE) {
             player.sendSystemMessage(TpmCommand.grayText("您的传送请求已被自动拒绝"))
             return 1
