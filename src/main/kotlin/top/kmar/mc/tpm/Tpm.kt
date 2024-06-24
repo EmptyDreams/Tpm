@@ -2,9 +2,11 @@ package top.kmar.mc.tpm
 
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import top.kmar.mc.tpm.commands.TpmCommand
+import top.kmar.mc.tpm.save.DefaultConfigData
 import top.kmar.mc.tpm.save.TpmWorldData
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -18,6 +20,9 @@ object Tpm : ModInitializer {
     val scheduledExecutor: ScheduledExecutorService by lazy(LazyThreadSafetyMode.NONE) { initScheduledExecutor() }
 
     override fun onInitialize() {
+        ServerLifecycleEvents.SERVER_STARTING.register {
+            DefaultConfigData.reloadConfig(it)
+        }
         TpmWorldData.initWorld()
         TpRequestManager.initEvent()
         CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->

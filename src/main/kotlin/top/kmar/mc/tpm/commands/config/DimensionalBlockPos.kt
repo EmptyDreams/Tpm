@@ -1,5 +1,6 @@
 package top.kmar.mc.tpm.commands.config
 
+import com.google.gson.JsonElement
 import net.minecraft.ChatFormatting
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
@@ -45,6 +46,21 @@ data class DimensionalBlockPos(
         val builder = { _: MinecraftServer, compoundTag: CompoundTag? ->
             if (compoundTag == null) null
             else buildFrom(compoundTag)
+        }
+
+        @JvmStatic
+        val jsonParser = { server: MinecraftServer, json: JsonElement ->
+            require(json.isJsonArray) { IllegalArgumentException("传入的参数应当为数组") }
+            val array = json.asJsonArray
+            require(array.size() == 4) { IllegalArgumentException("数组格式应当为：[level, x, y, z]") }
+            val level = server.allLevels.find { it.dimension().location() == ResourceLocation(array[0].asString) }
+                ?: throw IllegalArgumentException("传入的维度不存在：$array[0]")
+            val x = array[1].asDouble
+            val y = array[2].asDouble
+            val z = array[3].asDouble
+            val result = CompoundTag()
+            DimensionalBlockPos(level, x, y, z).saveTo(result)
+            result
         }
 
         @JvmStatic

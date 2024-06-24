@@ -1,11 +1,14 @@
 package top.kmar.mc.tpm.commands.config
 
+import com.google.gson.JsonElement
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.commands.TpmCommand
 import java.util.concurrent.ConcurrentHashMap
@@ -67,7 +70,8 @@ class ConfigRegister(
             ((CommandContext<CommandSourceStack>) -> ServerPlayer?)?
         ) -> LiteralArgumentBuilder<CommandSourceStack>,
         val reader: (ServerPlayer) -> Component?,
-        val writer: (ServerPlayer?, CommandContext<CommandSourceStack>) -> Int
+        val writer: (ServerPlayer?, CommandContext<CommandSourceStack>) -> Int,
+        val parseJson: ((MinecraftServer, JsonElement) -> CompoundTag)? = null
     )
 
 }

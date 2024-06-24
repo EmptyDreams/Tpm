@@ -26,5 +26,7 @@ fun <T : TpmWorldData.NBTSerializable> ServerPlayer.readOfflineData(
     key: String, builder: (MinecraftServer, CompoundTag?) -> T?
 ): T? {
     val realKey = "p-$uuid-$key"
-    return TpmWorldData.get(realKey, builder)
+    return TpmWorldData.get(realKey) { server, compoundTag ->
+        builder(server, compoundTag ?: DefaultConfigData.readDefault(this, key))
+    }
 }

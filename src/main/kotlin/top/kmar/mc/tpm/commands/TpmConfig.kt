@@ -52,7 +52,8 @@ object TpmConfig {
                 }
                 player.tpmHome = pos
                 1
-            }
+            },
+            parseJson = DimensionalBlockPos.jsonParser
         )
         this["auto_reject"] = ConfigValue(
             commands = { it, playerGetter ->
@@ -85,7 +86,8 @@ object TpmConfig {
                     player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用"))
                 }
                 1
-            }
+            },
+            parseJson = BooleanConfig.jsonParser
         )
         this["auto_accept"] = ConfigValue(
             commands = { it, playerGetter ->
@@ -121,7 +123,8 @@ object TpmConfig {
                     player.sendSystemMessage(TpmCommand.grayText("自动接受已启用"))
                 }
                 1
-            }
+            },
+            parseJson = BooleanConfig.jsonParser
         )
     }
 
