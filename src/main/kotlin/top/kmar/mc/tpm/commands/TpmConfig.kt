@@ -2,14 +2,14 @@ package top.kmar.mc.tpm.commands
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.BoolArgumentType
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.DimensionArgument
 import net.minecraft.network.chat.Component
-import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.commands.config.BooleanConfig
+import top.kmar.mc.tpm.commands.config.ConfigRegister
+import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
 import top.kmar.mc.tpm.data.DoubleBlockPos
@@ -17,12 +17,11 @@ import top.kmar.mc.tpm.save.TpmWorldData
 import top.kmar.mc.tpm.save.readOfflineData
 import top.kmar.mc.tpm.save.setOfflineData
 import top.kmar.mc.tpm.save.tpmHome
-import java.util.concurrent.ConcurrentHashMap
 
 object TpmConfig {
 
     @JvmStatic
-    private val configMap = ConcurrentHashMap<String, ConfigValue>().apply {
+    private val configMap = ConfigRegister("tpconfig").apply {
         this["home"] = ConfigValue(
             commands = {
                 it.executes { context ->
@@ -76,7 +75,10 @@ object TpmConfig {
                             val player = context.source.playerOrException
                             val value = BoolArgumentType.getBool(context, "value")
                             player.setOfflineData("auto_accept", BooleanConfig.from(value))
-                            if (value && player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE) {
+                            if (
+                                value &&
+                                player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE
+                            ) {
                                 player.setOfflineData("auto_reject", BooleanConfig.FALSE)
                                 player.sendSystemMessage(TpmCommand.grayText("自动接受已启用，自动拒绝自动关闭"))
                             } else {
@@ -131,37 +133,7 @@ object TpmConfig {
 
     @JvmStatic
     fun registry(dispatcher: CommandDispatcher<CommandSourceStack>) {
-        var rootSet = Commands.literal("set")
-        var rootGet = Commands.literal("get")
-        configMap.forEach { (key, config) ->
-            var base = Commands.literal(key)
-            rootGet = rootGet.then(base.executes { context ->
-                val player = context.source.playerOrException
-                readConfig(player, key)
-                1
-            })
-            base = config.commands(base)
-            rootSet = rootSet.then(base)
-        }
-        dispatcher.register(
-            Commands.literal("tpconfig").then(rootSet).then(rootGet)
-        )
+        configMap.registry(dispatcher) { it }
     }
-
-    @JvmStatic
-    private fun readConfig(player: ServerPlayer, key: String) {
-        val config = configMap[key]
-        if (config == null) {
-            player.sendSystemMessage(TpmCommand.errorText("配置名不存在"))
-            return
-        }
-        val data = config.reader(player) ?: TpmCommand.grayText("配置项未设置值")
-        player.sendSystemMessage(data)
-    }
-
-    private data class ConfigValue(
-        val commands: (LiteralArgumentBuilder<CommandSourceStack>) -> LiteralArgumentBuilder<CommandSourceStack>,
-        val reader: (ServerPlayer) -> Component?
-    )
 
 }
