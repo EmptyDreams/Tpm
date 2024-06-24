@@ -2,6 +2,7 @@ package top.kmar.mc.tpm.commands.config
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import com.mojang.brigadier.context.CommandContext
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
@@ -36,7 +37,7 @@ class ConfigRegister(
                 readConfig(player, key)
                 1
             })
-            base = config.commands(base)
+            base = config.commands(config, base)
             rootSet = rootSet.then(base)
         }
         dispatcher.register(
@@ -55,8 +56,9 @@ class ConfigRegister(
     }
 
     data class ConfigValue(
-        val commands: (LiteralArgumentBuilder<CommandSourceStack>) -> LiteralArgumentBuilder<CommandSourceStack>,
-        val reader: (ServerPlayer) -> Component?
+        val commands: ConfigValue.(LiteralArgumentBuilder<CommandSourceStack>) -> LiteralArgumentBuilder<CommandSourceStack>,
+        val reader: (ServerPlayer) -> Component?,
+        val writer: (ServerPlayer?, CommandContext<CommandSourceStack>) -> Int
     )
 
 }

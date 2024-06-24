@@ -5,6 +5,7 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.DimensionArgument
 import net.minecraft.network.chat.Component
+import top.kmar.mc.tpm.Tpm
 import top.kmar.mc.tpm.commands.config.ConfigRegister
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
@@ -19,23 +20,11 @@ object TpmTpManager {
         this["main"] = ConfigValue(
             commands = {
                 it.executes { context ->
-                    val player = context.source.playerOrException
-                    val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder) ?: MultiLevelBlockPos()
-                    posList.put(DimensionalBlockPos(player.serverLevel(), player.x, player.y + 0.5, player.z))
-                    TpmWorldData["main"] = posList
-                    player.sendSystemMessage(TpmCommand.grayText("已将当前世界主城设置到当前坐标"))
-                    1
+                    writer(context.source.player, context)
                 }.then(TpmCommand.joinArguments(
                     Commands.argument("level", DimensionArgument.dimension()),
                     *TpmCommand.worldPosArgument
-                ) { context ->
-                    val level = DimensionArgument.getDimension(context, "level")
-                    val (x, y, z) = DoubleBlockPos.readFromContext(context)
-                    val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder) ?: MultiLevelBlockPos()
-                    posList.put(DimensionalBlockPos(level, x, y, z))
-                    TpmWorldData["main"] = posList
-                    1
-                })
+                ) { context -> writer(null, context) })
             },
             reader = { _ ->
                 val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder)
@@ -47,6 +36,21 @@ object TpmTpManager {
                     }
                     root
                 }
+            },
+            writer = { player, context ->
+                val pos = if (player != null) {
+                    player.sendSystemMessage(TpmCommand.grayText("已将世界主城设置到当前位置"))
+                    DimensionalBlockPos(player.serverLevel(), player.x, player.y + 0.5, player.z)
+                } else {
+                    Tpm.logger.info("已将世界主城设置到指定位置")
+                    val level = DimensionArgument.getDimension(context, "level")
+                    val (x, y, z) = DoubleBlockPos.readFromContext(context)
+                    DimensionalBlockPos(level, x, y, z)
+                }
+                val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder) ?: MultiLevelBlockPos()
+                posList.put(pos)
+                TpmWorldData["main"] = posList
+                1
             }
         )
     }

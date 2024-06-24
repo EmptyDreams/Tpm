@@ -18,77 +18,85 @@ import top.kmar.mc.tpm.save.tpmHome
 object TpmConfig {
 
     @JvmStatic
-    private val configMap = ConfigRegister("tpconfig").apply {
+    val configMap = ConfigRegister("tpconfig").apply {
         this["home"] = ConfigValue(
             commands = {
                 it.executes { context ->
-                    val player = context.source.playerOrException
-                    player.tpmHome = DimensionalBlockPos(player.serverLevel(), player.x, player.y + 0.5, player.z)
-                    player.sendSystemMessage(TpmCommand.grayText("已将家设置到当前位置"))
-                    1
+                    writer(context.source.playerOrException, context)
                 }.then(TpmCommand.joinArguments(*TpmCommand.worldPosArgument) { context ->
-                    @Suppress("DuplicatedCode")
-                    val player = context.source.playerOrException
-                    val (x, y, z) = DoubleBlockPos.readFromContext(context)
-                    player.tpmHome = DimensionalBlockPos(player.serverLevel(), x, y, z)
-                    1
+                    writer(context.source.playerOrException, context)
                 })
             },
             reader = { player ->
                 val tpmHome = player.tpmHome ?: return@ConfigValue null
                 Component.literal("当前您的家的坐标为：")
                     .append(tpmHome.toComponent())
+            },
+            writer = { player, context ->
+                player!!
+                val pos = if (context.input.endsWith('e')) {
+                    player.sendSystemMessage(TpmCommand.grayText("已将您的家设置到当前位置"))
+                    DimensionalBlockPos(player.serverLevel(), player.x, player.y + 0.5, player.z)
+                } else {
+                    val (x, y, z) = DoubleBlockPos.readFromContext(context)
+                    player.sendSystemMessage(TpmCommand.grayText("已将您的家设置到指定位置"))
+                    DimensionalBlockPos(player.serverLevel(), x, y, z)
+                }
+                player.tpmHome = pos
+                1
             }
         )
         this["auto_reject"] = ConfigValue(
             commands = {
                 it.then(
                     Commands.argument("value", BoolArgumentType.bool())
-                        .executes { context ->
-                            val player = context.source.playerOrException
-                            val value = BoolArgumentType.getBool(context, "value")
-                            player.setOfflineData("auto_reject", BooleanConfig.from(value))
-                            if (value && player.readOfflineData("auto_accept", BooleanConfig.builder) == BooleanConfig.TRUE) {
-                                player.setOfflineData("auto_accept", BooleanConfig.FALSE)
-                                player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用，自动接受自动关闭"))
-                            } else {
-                                player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用"))
-                            }
-                            1
-                        }
+                        .executes { context -> writer(context.source.playerOrException, context) }
                 )
             },
             reader = { player ->
                 val value = player.readOfflineData("auto_reject", BooleanConfig.builder)!!.value
                 Component.literal("是否启用自动拒绝：")
                     .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.DARK_GRAY))
+            },
+            writer = { player, context ->
+                player!!
+                val value = BoolArgumentType.getBool(context, "value")
+                player.setOfflineData("auto_reject", BooleanConfig.from(value))
+                if (value && player.readOfflineData("auto_accept", BooleanConfig.builder) == BooleanConfig.TRUE) {
+                    player.setOfflineData("auto_accept", BooleanConfig.FALSE)
+                    player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用，自动接受自动关闭"))
+                } else {
+                    player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用"))
+                }
+                1
             }
         )
         this["auto_accept"] = ConfigValue(
             commands = {
                 it.then(
                     Commands.argument("value", BoolArgumentType.bool())
-                        .executes { context ->
-                            val player = context.source.playerOrException
-                            val value = BoolArgumentType.getBool(context, "value")
-                            player.setOfflineData("auto_accept", BooleanConfig.from(value))
-                            if (
-                                value &&
-                                player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE
-                            ) {
-                                player.setOfflineData("auto_reject", BooleanConfig.FALSE)
-                                player.sendSystemMessage(TpmCommand.grayText("自动接受已启用，自动拒绝自动关闭"))
-                            } else {
-                                player.sendSystemMessage(TpmCommand.grayText("自动接受已启用"))
-                            }
-                            1
-                        }
+                        .executes { context -> writer(context.source.playerOrException, context) }
                 )
             },
             reader = { player ->
                 val value = player.readOfflineData("auto_accept", BooleanConfig.builder)!!.value
                 Component.literal("是否启用自动接受：")
                     .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.DARK_GRAY))
+            },
+            writer = { player, context ->
+                player!!
+                val value = BoolArgumentType.getBool(context, "value")
+                player.setOfflineData("auto_accept", BooleanConfig.from(value))
+                if (
+                    value &&
+                    player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE
+                ) {
+                    player.setOfflineData("auto_reject", BooleanConfig.FALSE)
+                    player.sendSystemMessage(TpmCommand.grayText("自动接受已启用，自动拒绝自动关闭"))
+                } else {
+                    player.sendSystemMessage(TpmCommand.grayText("自动接受已启用"))
+                }
+                1
             }
         )
     }
