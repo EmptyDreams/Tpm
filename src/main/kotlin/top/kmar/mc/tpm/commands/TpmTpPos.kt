@@ -82,7 +82,7 @@ object TpmTpPos {
             sendSystemMessage(TpmCommand.grayText("已将您传送到世界出生点"))
         } else {
             teleportTo(pos)
-            sendSystemMessage(TpmCommand.grayText("已将您传送到当前世界主城"))
+            sendSystemMessage(TpmCommand.grayText("已将您传送到世界主城"))
         }
     }
 
