@@ -79,11 +79,17 @@ object TpmConfig {
                 player!!
                 val value = BoolArgumentType.getBool(context, "value")
                 player.setOfflineData("auto_reject", BooleanConfig.from(value))
-                if (value && player.readOfflineData("auto_accept", BooleanConfig.builder) == BooleanConfig.TRUE) {
-                    player.setOfflineData("auto_accept", BooleanConfig.FALSE)
-                    player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用，自动接受自动关闭"))
-                } else {
-                    player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用"))
+                when {
+                    value && player.readOfflineData("auto_accept", BooleanConfig.builder) == BooleanConfig.TRUE -> {
+                        player.setOfflineData("auto_accept", BooleanConfig.FALSE)
+                        player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用，自动接受自动关闭"))
+                    }
+                    value -> {
+                        player.run { sendSystemMessage(TpmCommand.grayText("自动拒绝已启用")) }
+                    }
+                    else -> {
+                        player.sendSystemMessage(TpmCommand.grayText("自动拒绝已关闭"))
+                    }
                 }
                 1
             },
@@ -113,14 +119,17 @@ object TpmConfig {
                 player!!
                 val value = BoolArgumentType.getBool(context, "value")
                 player.setOfflineData("auto_accept", BooleanConfig.from(value))
-                if (
-                    value &&
-                    player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE
-                ) {
-                    player.setOfflineData("auto_reject", BooleanConfig.FALSE)
-                    player.sendSystemMessage(TpmCommand.grayText("自动接受已启用，自动拒绝自动关闭"))
-                } else {
-                    player.sendSystemMessage(TpmCommand.grayText("自动接受已启用"))
+                when {
+                    value && player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE -> {
+                        player.setOfflineData("auto_reject", BooleanConfig.FALSE)
+                        player.sendSystemMessage(TpmCommand.grayText("自动接受已启用，自动拒绝自动关闭"))
+                    }
+                    value -> {
+                        player.sendSystemMessage(TpmCommand.grayText("自动接受已启用"))
+                    }
+                    else -> {
+                        player.sendSystemMessage(TpmCommand.grayText("自动接受已关闭"))
+                    }
                 }
                 1
             },
