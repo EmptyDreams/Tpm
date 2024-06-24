@@ -14,6 +14,7 @@ import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
 import top.kmar.mc.tpm.data.DoubleBlockPos
 import top.kmar.mc.tpm.permissions
+import top.kmar.mc.tpm.save.DefaultConfigData
 import top.kmar.mc.tpm.save.TpmWorldData
 
 object TpmTpManager {
@@ -81,6 +82,17 @@ object TpmTpManager {
     fun registry(dispatcher: CommandDispatcher<CommandSourceStack>) {
         configMap.registry(dispatcher) {
             it.requires { source -> source.hasPermission(3) }
+                .then(
+                    Commands.literal("reload")
+                        .executes { context ->
+                            val player = context.source.player
+                            val server = context.source.server
+                            DefaultConfigData.reloadConfig(server)
+                            if (player == null) Tpm.logger.info("用户缺省配置已重新加载")
+                            else player.sendSystemMessage(TpmCommand.grayText("用户缺省配置已重新加载"))
+                            1
+                        }
+                )
         }
     }
 

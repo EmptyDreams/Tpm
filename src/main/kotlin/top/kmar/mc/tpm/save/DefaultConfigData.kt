@@ -18,6 +18,7 @@ object DefaultConfigData {
 
     @JvmStatic
     fun reloadConfig(server: MinecraftServer) {
+        map.clear()
         val file = server.getFile("config/tpm.json")
         if (file.exists()) {
             val text = Files.readString(file.toPath())
