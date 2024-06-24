@@ -73,7 +73,7 @@ object TpmTpConfig {
             reader = { player ->
                 val value = player.readOfflineData("auto_reject", BooleanConfig.builder)!!.value
                 Component.literal("是否启用自动拒绝：")
-                    .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.DARK_GRAY))
+                    .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.GRAY))
             },
             writer = { player, context ->
                 player!!
@@ -113,7 +113,7 @@ object TpmTpConfig {
             reader = { player ->
                 val value = player.readOfflineData("auto_accept", BooleanConfig.builder)!!.value
                 Component.literal("是否启用自动接受：")
-                    .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.DARK_GRAY))
+                    .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.GRAY))
             },
             writer = { player, context ->
                 player!!
