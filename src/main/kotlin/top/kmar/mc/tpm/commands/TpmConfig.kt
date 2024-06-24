@@ -5,15 +5,12 @@ import com.mojang.brigadier.arguments.BoolArgumentType
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
-import net.minecraft.commands.arguments.DimensionArgument
 import net.minecraft.network.chat.Component
 import top.kmar.mc.tpm.commands.config.BooleanConfig
 import top.kmar.mc.tpm.commands.config.ConfigRegister
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
-import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
 import top.kmar.mc.tpm.data.DoubleBlockPos
-import top.kmar.mc.tpm.save.TpmWorldData
 import top.kmar.mc.tpm.save.readOfflineData
 import top.kmar.mc.tpm.save.setOfflineData
 import top.kmar.mc.tpm.save.tpmHome
@@ -92,41 +89,6 @@ object TpmConfig {
                 val value = player.readOfflineData("auto_accept", BooleanConfig.builder)!!.value
                 Component.literal("是否启用自动接受：")
                     .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.DARK_GRAY))
-            }
-        )
-        this["main"] = ConfigValue(
-            commands = {
-                it.requires { source -> source.hasPermission(3) }
-                    .executes { context ->
-                        val player = context.source.playerOrException
-                        val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder) ?: MultiLevelBlockPos()
-                        posList.put(DimensionalBlockPos(player.serverLevel(), player.x, player.y + 0.5, player.z))
-                        TpmWorldData["main"] = posList
-                        player.sendSystemMessage(TpmCommand.grayText("已将当前世界主城设置到当前坐标"))
-                        1
-                    }
-                    .then(TpmCommand.joinArguments(
-                        Commands.argument("level", DimensionArgument.dimension()),
-                        *TpmCommand.worldPosArgument
-                    ) { context ->
-                        val level = DimensionArgument.getDimension(context, "level")
-                        val (x, y, z) = DoubleBlockPos.readFromContext(context)
-                        val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder) ?: MultiLevelBlockPos()
-                        posList.put(DimensionalBlockPos(level, x, y, z))
-                        TpmWorldData["main"] = posList
-                        1
-                    })
-            },
-            reader = { _ ->
-                val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder)
-                if (posList == null) null
-                else {
-                    var root = Component.literal("各世界中心传送点列表：")
-                    for (pos in posList) {
-                        root = root.append("\n    ").append(pos.toComponent())
-                    }
-                    root
-                }
             }
         )
     }

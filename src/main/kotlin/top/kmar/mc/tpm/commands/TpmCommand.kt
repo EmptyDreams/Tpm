@@ -21,6 +21,7 @@ object TpmCommand {
     @JvmStatic
     fun registry(dispatcher: CommandDispatcher<CommandSourceStack>) {
         TpmConfig.registry(dispatcher)
+        TpmTpManager.registry(dispatcher)
         TpmTpPos.registry(dispatcher)
         TpmTpAsk.registry(dispatcher)
         TpmHome.registry(dispatcher)
