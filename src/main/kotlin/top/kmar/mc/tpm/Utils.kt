@@ -3,6 +3,7 @@ package top.kmar.mc.tpm
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
 
 private val levelLocalNameMap = Object2ObjectArrayMap<ResourceLocation, String>(3).apply {
     put(ResourceLocation("minecraft", "overworld"), "flat_world_preset.minecraft.overworld")
@@ -15,3 +16,6 @@ fun getLevelLocalName(level: ResourceLocation) =
 
 val ServerLevel.localName: String
     get() = getLevelLocalName(dimension().location())
+
+val ServerPlayer.permissions: Int
+    get() = server.getProfilePermissions(gameProfile)

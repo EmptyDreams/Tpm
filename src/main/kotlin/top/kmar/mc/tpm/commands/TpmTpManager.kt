@@ -13,6 +13,7 @@ import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
 import top.kmar.mc.tpm.data.DoubleBlockPos
+import top.kmar.mc.tpm.permissions
 import top.kmar.mc.tpm.save.TpmWorldData
 
 object TpmTpManager {
@@ -59,8 +60,14 @@ object TpmTpManager {
             commands = { it, _ ->
                 var root = argument("tpm_player", EntityArgument.player())
                 TpmConfig.configMap.forEach { (key, value) ->
-                    root = root.then(value.commands(value, Commands.literal(key)) {
-                        context -> EntityArgument.getPlayer(context, "tpm_player")
+                    root = root.then(value.commands(value, Commands.literal(key)) { context ->
+                        val targetPlayer = EntityArgument.getPlayer(context, "tpm_player")
+                        val sourcePlayer = context.source.player
+                        if (sourcePlayer != null && sourcePlayer.permissions <= targetPlayer.permissions) {
+                            sourcePlayer.sendSystemMessage(TpmCommand.errorText("您没有权限修改对方的配置"))
+                            return@commands null
+                        }
+                        targetPlayer
                     })
                 }
                 it.then(root)

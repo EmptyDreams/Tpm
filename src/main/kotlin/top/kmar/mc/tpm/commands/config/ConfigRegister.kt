@@ -64,7 +64,7 @@ class ConfigRegister(
     data class ConfigValue(
         val commands: ConfigValue.(
             LiteralArgumentBuilder<CommandSourceStack>,
-            ((CommandContext<CommandSourceStack>) -> ServerPlayer)?
+            ((CommandContext<CommandSourceStack>) -> ServerPlayer?)?
         ) -> LiteralArgumentBuilder<CommandSourceStack>,
         val reader: (ServerPlayer) -> Component?,
         val writer: (ServerPlayer?, CommandContext<CommandSourceStack>) -> Int

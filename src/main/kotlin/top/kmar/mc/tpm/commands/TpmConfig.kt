@@ -29,8 +29,9 @@ object TpmConfig {
                     })
                 } else {
                     it.then(TpmCommand.joinArguments(*TpmCommand.worldPosArgument) { context ->
+                        val player = playerGetter(context) ?: return@joinArguments 0
                         context.source.player?.sendSystemMessage(TpmCommand.grayText("已成功修改目标家的坐标"))
-                        writer(playerGetter(context), context)
+                        writer(player, context)
                     })
                 }
             },
@@ -61,8 +62,9 @@ object TpmConfig {
                             if (playerGetter == null) {
                                 writer(context.source.playerOrException, context)
                             } else {
+                                val player = playerGetter(context) ?: return@executes 0
                                 context.source.player?.sendSystemMessage(TpmCommand.grayText("已成功修改目标的自动拒绝配置"))
-                                writer(playerGetter(context), context)
+                                writer(player, context)
                             }
                         }
                 )
@@ -93,8 +95,9 @@ object TpmConfig {
                             if (playerGetter == null) {
                                 writer(context.source.playerOrException, context)
                             } else {
+                                val player = playerGetter(context) ?: return@executes 0
                                 context.source.player?.sendSystemMessage(TpmCommand.grayText("已成功修改目标的自动接受配置"))
-                                writer(playerGetter(context), context)
+                                writer(player, context)
                             }
                         }
                 )
