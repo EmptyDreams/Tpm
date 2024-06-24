@@ -3,7 +3,9 @@ package top.kmar.mc.tpm.commands
 import com.mojang.brigadier.CommandDispatcher
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
+import net.minecraft.commands.Commands.argument
 import net.minecraft.commands.arguments.DimensionArgument
+import net.minecraft.commands.arguments.EntityArgument
 import net.minecraft.network.chat.Component
 import top.kmar.mc.tpm.Tpm
 import top.kmar.mc.tpm.commands.config.ConfigRegister
@@ -18,11 +20,11 @@ object TpmTpManager {
     @JvmStatic
     private val configMap = ConfigRegister("tpm").apply {
         this["main"] = ConfigValue(
-            commands = {
+            commands = { it, _ ->
                 it.executes { context ->
                     writer(context.source.player, context)
                 }.then(TpmCommand.joinArguments(
-                    Commands.argument("level", DimensionArgument.dimension()),
+                    argument("level", DimensionArgument.dimension()),
                     *TpmCommand.worldPosArgument
                 ) { context -> writer(null, context) })
             },
@@ -52,6 +54,19 @@ object TpmTpManager {
                 TpmWorldData["main"] = posList
                 1
             }
+        )
+        this["person"] = ConfigValue(
+            commands = { it, _ ->
+                var root = argument("tpm_player", EntityArgument.player())
+                TpmConfig.configMap.forEach { (key, value) ->
+                    root = root.then(value.commands(value, Commands.literal(key)) {
+                        context -> EntityArgument.getPlayer(context, "tpm_player")
+                    })
+                }
+                it.then(root)
+            },
+            reader = { _ -> null },
+            writer = { _, _ -> 1 },
         )
     }
 

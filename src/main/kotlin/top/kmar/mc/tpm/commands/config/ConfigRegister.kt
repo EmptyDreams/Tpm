@@ -20,6 +20,12 @@ class ConfigRegister(
         configMap[key] = config
     }
 
+    operator fun get(key: String): ConfigValue = configMap[key]!!
+
+    fun forEach(consumer: (Map.Entry<String, ConfigValue>) -> Unit) {
+        configMap.forEach(consumer)
+    }
+
     /**
      * 注册指令
      * @param dispatcher 指令注册机
@@ -37,7 +43,7 @@ class ConfigRegister(
                 readConfig(player, key)
                 1
             })
-            base = config.commands(config, base)
+            base = config.commands(config, base, null)
             rootSet = rootSet.then(base)
         }
         dispatcher.register(
@@ -56,7 +62,10 @@ class ConfigRegister(
     }
 
     data class ConfigValue(
-        val commands: ConfigValue.(LiteralArgumentBuilder<CommandSourceStack>) -> LiteralArgumentBuilder<CommandSourceStack>,
+        val commands: ConfigValue.(
+            LiteralArgumentBuilder<CommandSourceStack>,
+            ((CommandContext<CommandSourceStack>) -> ServerPlayer)?
+        ) -> LiteralArgumentBuilder<CommandSourceStack>,
         val reader: (ServerPlayer) -> Component?,
         val writer: (ServerPlayer?, CommandContext<CommandSourceStack>) -> Int
     )

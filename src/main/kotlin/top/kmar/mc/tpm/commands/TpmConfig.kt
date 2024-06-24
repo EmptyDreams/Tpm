@@ -20,12 +20,19 @@ object TpmConfig {
     @JvmStatic
     val configMap = ConfigRegister("tpconfig").apply {
         this["home"] = ConfigValue(
-            commands = {
-                it.executes { context ->
-                    writer(context.source.playerOrException, context)
-                }.then(TpmCommand.joinArguments(*TpmCommand.worldPosArgument) { context ->
-                    writer(context.source.playerOrException, context)
-                })
+            commands = { it, playerGetter ->
+                if (playerGetter == null) {
+                    it.executes { context ->
+                        writer(context.source.playerOrException, context)
+                    }.then(TpmCommand.joinArguments(*TpmCommand.worldPosArgument) { context ->
+                        writer(context.source.playerOrException, context)
+                    })
+                } else {
+                    it.then(TpmCommand.joinArguments(*TpmCommand.worldPosArgument) { context ->
+                        context.source.player?.sendSystemMessage(TpmCommand.grayText("已成功修改目标家的坐标"))
+                        writer(playerGetter(context), context)
+                    })
+                }
             },
             reader = { player ->
                 val tpmHome = player.tpmHome ?: return@ConfigValue null
@@ -47,10 +54,17 @@ object TpmConfig {
             }
         )
         this["auto_reject"] = ConfigValue(
-            commands = {
+            commands = { it, playerGetter ->
                 it.then(
                     Commands.argument("value", BoolArgumentType.bool())
-                        .executes { context -> writer(context.source.playerOrException, context) }
+                        .executes {context ->
+                            if (playerGetter == null) {
+                                writer(context.source.playerOrException, context)
+                            } else {
+                                context.source.player?.sendSystemMessage(TpmCommand.grayText("已成功修改目标的自动拒绝配置"))
+                                writer(playerGetter(context), context)
+                            }
+                        }
                 )
             },
             reader = { player ->
@@ -72,10 +86,17 @@ object TpmConfig {
             }
         )
         this["auto_accept"] = ConfigValue(
-            commands = {
+            commands = { it, playerGetter ->
                 it.then(
                     Commands.argument("value", BoolArgumentType.bool())
-                        .executes { context -> writer(context.source.playerOrException, context) }
+                        .executes { context ->
+                            if (playerGetter == null) {
+                                writer(context.source.playerOrException, context)
+                            } else {
+                                context.source.player?.sendSystemMessage(TpmCommand.grayText("已成功修改目标的自动接受配置"))
+                                writer(playerGetter(context), context)
+                            }
+                        }
                 )
             },
             reader = { player ->
