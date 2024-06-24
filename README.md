@@ -34,6 +34,7 @@
 + `tpm set`: 修改服务器指定设置
 + `tpm get`: 读取服务器指定设置
 + `tpm set person <player>`: 修改指定玩家的指定配置（要求 3 级管理员）
++ `tpm reload`: 重新加载配置文件
 + `tpaccept [player]`: 接受指定玩家/所有人发起的传送请求（对于 `tphere`，必须携带 `player` 参数）
 + `tpreject [player]`: 拒绝指定玩具/所有人发起的传送请求
 
