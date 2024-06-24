@@ -7,7 +7,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.Tpm
-import top.kmar.mc.tpm.commands.TpmConfig
+import top.kmar.mc.tpm.commands.TpmTpConfig
 import java.nio.file.Files
 import java.util.*
 
@@ -53,7 +53,7 @@ object DefaultConfigData {
 
     @JvmStatic
     private fun handleVersion1(server: MinecraftServer, json: JsonObject) {
-        TpmConfig.configMap.forEach { (key, config) ->
+        TpmTpConfig.configMap.forEach { (key, config) ->
             if (!json.has(key)) return@forEach
             val array = json[key].asJsonArray
             val list = ArrayList<ConfigData>(array.size())

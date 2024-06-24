@@ -6,7 +6,7 @@ import net.minecraft.commands.Commands
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos.Companion.teleportTo
 import top.kmar.mc.tpm.save.tpmHome
 
-object TpmHome {
+object TpmTpHome {
 
     fun registry(dispatcher: CommandDispatcher<CommandSourceStack>) {
         dispatcher.register(

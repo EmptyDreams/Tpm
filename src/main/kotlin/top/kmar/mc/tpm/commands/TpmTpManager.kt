@@ -60,7 +60,7 @@ object TpmTpManager {
         this["person"] = ConfigValue(
             commands = { it, _ ->
                 var root = argument("tpm_player", EntityArgument.player())
-                TpmConfig.configMap.forEach { (key, value) ->
+                TpmTpConfig.configMap.forEach { (key, value) ->
                     root = root.then(value.commands(value, Commands.literal(key)) { context ->
                         val targetPlayer = EntityArgument.getPlayer(context, "tpm_player")
                         val sourcePlayer = context.source.player

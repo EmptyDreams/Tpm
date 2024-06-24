@@ -15,7 +15,7 @@ import top.kmar.mc.tpm.save.readOfflineData
 import top.kmar.mc.tpm.save.setOfflineData
 import top.kmar.mc.tpm.save.tpmHome
 
-object TpmConfig {
+object TpmTpConfig {
 
     @JvmStatic
     val configMap = ConfigRegister("tpconfig").apply {
