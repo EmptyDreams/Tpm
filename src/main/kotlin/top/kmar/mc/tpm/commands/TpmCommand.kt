@@ -26,6 +26,7 @@ object TpmCommand {
         TpmTpAsk.registry(dispatcher)
         TpmTpHome.registry(dispatcher)
         TpmTpSpawn.registry(dispatcher)
+        TpmTpHelp.registry(dispatcher)
     }
 
     /** 构建一个可点击的按钮消息，点击事件为执行一条指令 */
@@ -41,6 +42,18 @@ object TpmCommand {
             }
     }
 
+    /** 构建一个可点击的链接消息 */
+    @JvmStatic
+    internal fun clickableUrl(text: String, url: String): Component {
+        return Component.literal(text)
+            .withStyle {
+                it.withUnderlined(true)
+                    .withColor(ChatFormatting.BLUE)
+                    .withClickEvent(ClickEvent(ClickEvent.Action.OPEN_URL, url))
+                    .withHoverEvent(HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(url)))
+            }
+    }
+
     /** 构建一个错误消息 */
     @JvmStatic
     internal fun errorText(text: String): MutableComponent {
@@ -53,6 +66,18 @@ object TpmCommand {
     internal fun grayText(text: String): MutableComponent {
         return Component.literal(text)
             .withStyle(ChatFormatting.GRAY)
+    }
+
+    @JvmStatic
+    internal fun yellowText(text: String): MutableComponent {
+        return Component.literal(text)
+            .withStyle(ChatFormatting.YELLOW)
+    }
+
+    @JvmStatic
+    internal fun whiteText(text: String): MutableComponent {
+        return Component.literal(text)
+            .withStyle(ChatFormatting.WHITE)
     }
 
     @JvmStatic
