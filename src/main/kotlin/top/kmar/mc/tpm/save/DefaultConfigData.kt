@@ -2,7 +2,6 @@ package top.kmar.mc.tpm.save
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
@@ -10,11 +9,12 @@ import top.kmar.mc.tpm.Tpm
 import top.kmar.mc.tpm.commands.TpmTpConfig
 import java.nio.file.Files
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 object DefaultConfigData {
 
     @JvmStatic
-    private val map = Object2ObjectRBTreeMap<String, List<ConfigData>>()
+    private val map = ConcurrentHashMap<String, List<ConfigData>>()
 
     @JvmStatic
     fun reloadConfig(server: MinecraftServer) {

@@ -45,6 +45,10 @@ object TpmWorldData : SavedData() {
         } as T?
     }
 
+    fun clearCache() {
+        dataMap.clear()
+    }
+
     fun remove(key: String) {
         dataMap.remove(key)
         compoundTag.remove(key)

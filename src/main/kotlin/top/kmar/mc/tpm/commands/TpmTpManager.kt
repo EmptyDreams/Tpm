@@ -88,6 +88,7 @@ object TpmTpManager {
                             val player = context.source.player
                             val server = context.source.server
                             DefaultConfigData.reloadConfig(server)
+                            TpmWorldData.clearCache()
                             if (player == null) Tpm.logger.info("用户缺省配置已重新加载")
                             else player.sendSystemMessage(TpmCommand.grayText("用户缺省配置已重新加载"))
                             1
