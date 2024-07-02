@@ -73,7 +73,7 @@ object TpmTpManager {
                 }
                 it.then(root)
             },
-            reader = { _ -> null },
+            reader = null,
             writer = { _, _ -> 1 },
         )
     }

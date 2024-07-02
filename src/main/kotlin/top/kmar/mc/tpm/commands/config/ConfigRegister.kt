@@ -41,11 +41,13 @@ class ConfigRegister(
         var rootGet = Commands.literal("get")
         configMap.forEach { (key, config) ->
             var base = Commands.literal(key)
-            rootGet = rootGet.then(base.executes { context ->
-                val player = context.source.playerOrException
-                readConfig(player, key)
-                1
-            })
+            if (config.reader != null) {
+                rootGet = rootGet.then(base.executes { context ->
+                    val player = context.source.playerOrException
+                    readConfig(player, key)
+                    1
+                })
+            }
             base = config.commands(config, base, null)
             rootSet = rootSet.then(base)
         }
@@ -60,7 +62,7 @@ class ConfigRegister(
             player.sendSystemMessage(TpmCommand.errorText("配置名不存在"))
             return
         }
-        val data = config.reader(player) ?: TpmCommand.grayText("配置项未设置值")
+        val data = config.reader!!(player) ?: TpmCommand.grayText("配置项未设置值")
         player.sendSystemMessage(data)
     }
 
@@ -69,7 +71,7 @@ class ConfigRegister(
             LiteralArgumentBuilder<CommandSourceStack>,
             ((CommandContext<CommandSourceStack>) -> ServerPlayer?)?
         ) -> LiteralArgumentBuilder<CommandSourceStack>,
-        val reader: (ServerPlayer) -> Component?,
+        val reader: ((ServerPlayer) -> Component?)?,
         val writer: (ServerPlayer?, CommandContext<CommandSourceStack>) -> Int,
         val parseJson: ((MinecraftServer, JsonElement) -> CompoundTag)? = null
     )
