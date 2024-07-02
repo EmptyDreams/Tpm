@@ -2,6 +2,7 @@ package top.kmar.mc.tpm.save
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import it.unimi.dsi.fastutil.objects.ObjectArraySet
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
@@ -59,8 +60,14 @@ object DefaultConfigData {
             val list = ArrayList<ConfigData>(array.size())
             for (element in array) {
                 val obj = element.asJsonObject
+                val regexOption = ObjectArraySet<RegexOption>(2).apply {
+                    add(RegexOption.CANON_EQ)
+                    if (obj.has("ignoreCase") && obj["ignoreCase"].asBoolean) {
+                        add(RegexOption.IGNORE_CASE)
+                    }
+                }
                 val regex = try {
-                    Regex(obj["regex"].asString)
+                    Regex(obj["regex"].asString, regexOption)
                 } catch (e: Exception) {
                     Tpm.logger.error("配置文件中存在错误的正则表达式：default.${key}.regex")
                     continue
