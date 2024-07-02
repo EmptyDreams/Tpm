@@ -80,7 +80,7 @@ object DefaultConfigData {
     @JvmStatic
     fun readDefault(player: ServerPlayer, key: String): CompoundTag? {
         val list = map[key] ?: return null
-        return list.find { it.regex.matches(player.name.string) }?.value
+        return list.find { it.regex.containsMatchIn(player.name.string) }?.value
     }
 
     private data class ConfigData(
