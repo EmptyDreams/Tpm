@@ -14,8 +14,7 @@ import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.TpRequestManager
 import top.kmar.mc.tpm.commands.TpmCommand.clickableButton
 import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
-import top.kmar.mc.tpm.commands.config.BooleanConfig
-import top.kmar.mc.tpm.save.readOfflineData
+import top.kmar.mc.tpm.save.tpmConfig
 
 object TpmTpAsk {
 
@@ -143,7 +142,7 @@ object TpmTpAsk {
             player.sendSystemMessage(TpmCommand.errorText("传送自己听起来像是未来的科技，目前我们的魔法还不足以让你和自己玩捉迷藏。"))
             return 0
         }
-        if (player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE) {
+        if (player.tpmConfig.autoReject) {
             targetPlayer.sendSystemMessage(TpmCommand.grayText("您的传送请求已被自动拒绝"))
             return 1
         }
@@ -182,15 +181,16 @@ object TpmTpAsk {
     private fun executeTpaCommand(context: CommandContext<CommandSourceStack>, force: Boolean): Int {
         val player = context.source.playerOrException
         val targetPlayer = EntityArgument.getPlayer(context, "player")
+        val targetPlayerConfig = targetPlayer.tpmConfig
         if (player == targetPlayer) {
             player.sendSystemMessage(TpmCommand.errorText("传送自己听起来像是未来的科技，目前我们的魔法还不足以让你和自己玩捉迷藏。"))
             return 0
         }
-        if (targetPlayer.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE) {
+        if (targetPlayerConfig.autoReject) {
             player.sendSystemMessage(TpmCommand.grayText("您的传送请求已被自动拒绝"))
             return 1
         }
-        val autoAccept = targetPlayer.readOfflineData("auto_accept", BooleanConfig.builder)!!.value
+        val autoAccept = targetPlayerConfig.autoAccept
         val success = TpRequestManager.appendRequest(TpRequestManager.TpRequest(
             sender = player, srcPlayer = player, targetPlayer = targetPlayer,
             rejectEvent = {

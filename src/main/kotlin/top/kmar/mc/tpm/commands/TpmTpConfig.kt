@@ -11,9 +11,7 @@ import top.kmar.mc.tpm.commands.config.ConfigRegister
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
 import top.kmar.mc.tpm.data.DoubleBlockPos
-import top.kmar.mc.tpm.save.readOfflineData
-import top.kmar.mc.tpm.save.setOfflineData
-import top.kmar.mc.tpm.save.tpmHome
+import top.kmar.mc.tpm.save.tpmConfig
 
 object TpmTpConfig {
 
@@ -36,7 +34,7 @@ object TpmTpConfig {
                 }
             },
             reader = { player ->
-                val tpmHome = player.tpmHome ?: return@ConfigValue null
+                val tpmHome = player.tpmConfig.home ?: return@ConfigValue null
                 Component.literal("当前您的家的坐标为：")
                     .append(tpmHome.toComponent())
             },
@@ -50,7 +48,7 @@ object TpmTpConfig {
                     player.sendSystemMessage(TpmCommand.grayText("已将您的家设置到指定位置"))
                     DimensionalBlockPos(player.serverLevel(), x, y, z)
                 }
-                player.tpmHome = pos
+                player.tpmConfig.home = pos
                 1
             },
             parseJson = DimensionalBlockPos.jsonParser
@@ -71,17 +69,18 @@ object TpmTpConfig {
                 )
             },
             reader = { player ->
-                val value = player.readOfflineData("auto_reject", BooleanConfig.builder)!!.value
+                val value = player.tpmConfig.autoReject
                 Component.literal("是否启用自动拒绝：")
                     .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.GRAY))
             },
             writer = { player, context ->
                 player!!
+                val playerConfig = player.tpmConfig
                 val value = BoolArgumentType.getBool(context, "value")
-                player.setOfflineData("auto_reject", BooleanConfig.from(value))
+                playerConfig.autoReject = value
                 when {
-                    value && player.readOfflineData("auto_accept", BooleanConfig.builder) == BooleanConfig.TRUE -> {
-                        player.setOfflineData("auto_accept", BooleanConfig.FALSE)
+                    value && playerConfig.autoAccept -> {
+                        playerConfig.autoAccept = false
                         player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用，自动接受自动关闭"))
                     }
                     value -> {
@@ -111,17 +110,18 @@ object TpmTpConfig {
                 )
             },
             reader = { player ->
-                val value = player.readOfflineData("auto_accept", BooleanConfig.builder)!!.value
+                val value = player.tpmConfig.autoAccept
                 Component.literal("是否启用自动接受：")
                     .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.GRAY))
             },
             writer = { player, context ->
                 player!!
+                val playerConfig = player.tpmConfig
                 val value = BoolArgumentType.getBool(context, "value")
-                player.setOfflineData("auto_accept", BooleanConfig.from(value))
+                playerConfig.autoAccept = value
                 when {
-                    value && player.readOfflineData("auto_reject", BooleanConfig.builder) == BooleanConfig.TRUE -> {
-                        player.setOfflineData("auto_reject", BooleanConfig.FALSE)
+                    value && playerConfig.autoReject -> {
+                        playerConfig.autoReject = false
                         player.sendSystemMessage(TpmCommand.grayText("自动接受已启用，自动拒绝自动关闭"))
                     }
                     value -> {
