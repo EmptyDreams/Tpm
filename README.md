@@ -66,6 +66,7 @@
     "auto_accept": [
       {
         "regex": "^bot_",
+        "ignoreCase": true,
         "value": true
       }
     ],
@@ -85,6 +86,6 @@
 }
 ```
 
-其中每一项数组中越靠前的优先级越大，`regex` 使用正则表达式匹配玩家名称。如果一个玩家 `auto_reject` 和 `auto_accept` 均为 `true`，则 `auto_reject` 生效。
+其中每一项数组中越靠前的优先级越大，`regex` 使用正则表达式匹配玩家名称，添加 `ignoreCase` 可以让正则表达式忽略大小写（默认不忽略）。如果一个玩家 `auto_reject` 和 `auto_accept` 均为 `true`，则 `auto_reject` 生效。
 
 所有布尔类型的全局缺省值均为 `false`，非基本类型的全局缺省值均为 `null`。上述 `json` 仅为范例，实际使用中建议删除与全局缺省值相同的配置（会影响性能）。
