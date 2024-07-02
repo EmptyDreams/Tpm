@@ -11,7 +11,7 @@ import top.kmar.mc.tpm.commands.config.ConfigRegister
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
 import top.kmar.mc.tpm.data.DoubleBlockPos
-import top.kmar.mc.tpm.save.tpmConfig
+import top.kmar.mc.tpm.save.tpmData
 
 object TpmTpConfig {
 
@@ -34,7 +34,7 @@ object TpmTpConfig {
                 }
             },
             reader = { player ->
-                val tpmHome = player.tpmConfig.home ?: return@ConfigValue null
+                val tpmHome = player.tpmData.home ?: return@ConfigValue null
                 Component.literal("当前您的家的坐标为：")
                     .append(tpmHome.toComponent())
             },
@@ -48,7 +48,7 @@ object TpmTpConfig {
                     player.sendSystemMessage(TpmCommand.grayText("已将您的家设置到指定位置"))
                     DimensionalBlockPos(player.serverLevel(), x, y, z)
                 }
-                player.tpmConfig.home = pos
+                player.tpmData.home = pos
                 1
             },
             parseJson = DimensionalBlockPos.jsonParser
@@ -69,13 +69,13 @@ object TpmTpConfig {
                 )
             },
             reader = { player ->
-                val value = player.tpmConfig.autoReject
+                val value = player.tpmData.autoReject
                 Component.literal("是否启用自动拒绝：")
                     .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.GRAY))
             },
             writer = { player, context ->
                 player!!
-                val playerConfig = player.tpmConfig
+                val playerConfig = player.tpmData
                 val value = BoolArgumentType.getBool(context, "value")
                 playerConfig.autoReject = value
                 when {
@@ -110,13 +110,13 @@ object TpmTpConfig {
                 )
             },
             reader = { player ->
-                val value = player.tpmConfig.autoAccept
+                val value = player.tpmData.autoAccept
                 Component.literal("是否启用自动接受：")
                     .append(Component.literal(value.toString().uppercase()).withStyle(ChatFormatting.GRAY))
             },
             writer = { player, context ->
                 player!!
-                val playerConfig = player.tpmConfig
+                val playerConfig = player.tpmData
                 val value = BoolArgumentType.getBool(context, "value")
                 playerConfig.autoAccept = value
                 when {

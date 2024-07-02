@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos.Companion.teleportTo
-import top.kmar.mc.tpm.save.tpmConfig
+import top.kmar.mc.tpm.save.tpmData
 
 object TpmTpHome {
 
@@ -12,7 +12,7 @@ object TpmTpHome {
         dispatcher.register(
             Commands.literal("tphome").executes { context ->
                 val player = context.source.playerOrException
-                val tpmHome = player.tpmConfig.home
+                val tpmHome = player.tpmData.home
                 if (tpmHome == null) {
                     player.sendSystemMessage(
                         TpmCommand.errorText("未设置家 ")

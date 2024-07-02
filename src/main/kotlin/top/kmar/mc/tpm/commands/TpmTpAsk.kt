@@ -14,7 +14,7 @@ import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.TpRequestManager
 import top.kmar.mc.tpm.commands.TpmCommand.clickableButton
 import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
-import top.kmar.mc.tpm.save.tpmConfig
+import top.kmar.mc.tpm.save.tpmData
 
 object TpmTpAsk {
 
@@ -142,7 +142,7 @@ object TpmTpAsk {
             player.sendSystemMessage(TpmCommand.errorText("传送自己听起来像是未来的科技，目前我们的魔法还不足以让你和自己玩捉迷藏。"))
             return 0
         }
-        if (player.tpmConfig.autoReject) {
+        if (player.tpmData.autoReject) {
             targetPlayer.sendSystemMessage(TpmCommand.grayText("您的传送请求已被自动拒绝"))
             return 1
         }
@@ -181,7 +181,7 @@ object TpmTpAsk {
     private fun executeTpaCommand(context: CommandContext<CommandSourceStack>, force: Boolean): Int {
         val player = context.source.playerOrException
         val targetPlayer = EntityArgument.getPlayer(context, "player")
-        val targetPlayerConfig = targetPlayer.tpmConfig
+        val targetPlayerConfig = targetPlayer.tpmData
         if (player == targetPlayer) {
             player.sendSystemMessage(TpmCommand.errorText("传送自己听起来像是未来的科技，目前我们的魔法还不足以让你和自己玩捉迷藏。"))
             return 0
