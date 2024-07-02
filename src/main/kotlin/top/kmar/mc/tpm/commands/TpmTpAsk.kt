@@ -91,7 +91,7 @@ object TpmTpAsk {
                             player.sendSystemMessage(TpmCommand.errorText("没有可拒绝的传送请求"))
                         } else {
                             request.reject()
-                            val callbackCommand = if (request.isSrcPlayer(request.srcPlayer)) {
+                            val callbackCommand = if (request.isTargetPlayer(player)) {
                                 "/tphere ${request.sender.name.string}"
                             } else {
                                 "/tpa ${request.sender.name.string}"
@@ -151,13 +151,13 @@ object TpmTpAsk {
             TpRequestManager.TpRequest(
             sender = targetPlayer, srcPlayer = player, targetPlayer = targetPlayer,
             rejectEvent = {
-                targetPlayer.sendSystemMessage(Component.empty().append(targetPlayer.name).append(" 拒绝了您的传送请求"))
+                targetPlayer.sendSystemMessage(Component.empty().append(player.name).append(" 拒绝了您的传送请求"))
             }
         ), force)
         if (!success) {
             player.sendSystemMessage(
                 TpmCommand.errorText("您存在未完成的传送请求 ")
-                    .append(clickableButton("[取消并重试]", "/tphere ${targetPlayer.name.string} true"))
+                    .append(clickableButton("[取消并重试]", "/tphere ${player.name.string} true"))
             )
             return 1
         }
