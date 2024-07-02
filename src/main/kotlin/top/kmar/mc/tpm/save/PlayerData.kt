@@ -41,11 +41,11 @@ class TpmPlayerDataMap(
     /** 自动拒绝 */
     var autoReject: Boolean
         get() = player.readTpmOfflineData("auto_reject", BooleanConfig.builder)?.value ?: false
-        set(value) = player.setTpmOfflineData("auto_reject", if (value) BooleanConfig.TRUE else null)
+        set(value) = player.setTpmOfflineData("auto_reject", BooleanConfig.from(value))
 
     /** 自动接受 */
     var autoAccept: Boolean
         get() = player.readTpmOfflineData("auto_accept", BooleanConfig.builder)?.value ?: false
-        set(value) = player.setTpmOfflineData("auto_accept", if (value) BooleanConfig.TRUE else null)
+        set(value) = player.setTpmOfflineData("auto_accept", BooleanConfig.from(value))
 
 }
