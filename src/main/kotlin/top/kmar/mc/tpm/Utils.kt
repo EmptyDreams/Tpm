@@ -19,3 +19,7 @@ val ServerLevel.localName: String
 
 val ServerPlayer.permissions: Int
     get() = server.getProfilePermissions(gameProfile)
+
+fun Double.formatToString(decimalPlaces: Int = 2): String {
+    return "%.${decimalPlaces}f".format(this)
+}

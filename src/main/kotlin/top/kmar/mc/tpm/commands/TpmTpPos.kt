@@ -17,6 +17,7 @@ import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos.Companion.teleportTo
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
 import top.kmar.mc.tpm.data.DoubleBlockPos
+import top.kmar.mc.tpm.formatToString
 import top.kmar.mc.tpm.localName
 import top.kmar.mc.tpm.save.TpmWorldData
 import java.util.concurrent.CompletableFuture
@@ -100,18 +101,18 @@ object DoublePosSuggestionProvider : SuggestionProvider<CommandSourceStack> {
         }
         when (input.size) {
             1 -> {
-                builder.suggest("${player.x}")
-                builder.suggest("${player.x} ${player.y}")
-                builder.suggest("${player.x} ${player.y} ${player.z}")
+                builder.suggest(player.x.formatToString())
+                builder.suggest("${player.x.formatToString()} ${player.y.formatToString()}")
+                builder.suggest("${player.x.formatToString()} ${player.y.formatToString()} ${player.z.formatToString()}")
             }
 
             2 -> {
-                builder.suggest("${player.y}")
-                builder.suggest("${player.y} ${player.z}")
+                builder.suggest(player.y.formatToString())
+                builder.suggest("${player.y.formatToString()} ${player.z.formatToString()}")
             }
 
             3 -> {
-                builder.suggest("${player.z}")
+                builder.suggest(player.z.formatToString())
             }
         }
         return builder.buildFuture()
