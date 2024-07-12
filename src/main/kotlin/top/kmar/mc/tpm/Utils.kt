@@ -32,3 +32,9 @@ inline fun <T, reified R> Array<T>.arrayMap(transform: (T, Int) -> R): Array<R> 
     }
     return cpy
 }
+
+fun String.containsWithoutUnderline(other: String): Int {
+    if (contains(other)) return 1
+    if (replace("_", "").contains(other)) return -1
+    return 0
+}

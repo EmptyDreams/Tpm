@@ -5,7 +5,10 @@ import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import net.minecraft.commands.CommandSourceStack
+import net.minecraft.server.level.ServerPlayer
+import top.kmar.mc.tpm.containsWithoutUnderline
 import top.kmar.mc.tpm.formatToString
+import top.kmar.mc.tpm.save.tpmData
 import java.util.concurrent.CompletableFuture
 
 /** 按顺序连接 provider */
@@ -67,7 +70,7 @@ object WorldSuggestionProvider : SuggestionProvider<CommandSourceStack> {
         context: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder
     ): CompletableFuture<Suggestions> {
         val levels = context.source.server.allLevels
-        val input = context.input.lowercase().split(" ").last().split(":")
+        val input = context.input.substringAfterLast(' ', "").lowercase().split(":")
         val lazyList = ArrayList<String>(2)
         if (input.size != 2) {
             for (level in levels) {
@@ -91,10 +94,40 @@ object WorldSuggestionProvider : SuggestionProvider<CommandSourceStack> {
         return builder.buildFuture()
     }
 
-    private fun String.containsWithoutUnderline(other: String): Int {
-        if (contains(other)) return 1
-        if (replace("_", "").contains(other)) return -1
-        return 0
-    }
-
 }
+
+/** 支持过滤的玩家自动补全 */
+open class PlayerFilterSuggestionProvider(
+    val filter: (sourcePlayer: ServerPlayer, otherPlayer: ServerPlayer) -> Boolean,
+) : SuggestionProvider<CommandSourceStack> {
+
+    override fun getSuggestions(
+        context: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder
+    ): CompletableFuture<Suggestions> {
+        val sourcePlayer = context.source.playerOrException
+        val playerList = context.source.server.playerList.players
+        val input = context.input.substringAfterLast(' ', "").lowercase()
+        val lazyList = ArrayList<String>()
+        for (player in playerList) {
+            if (!filter(sourcePlayer, player)) continue
+            val playerName = player.gameProfile.name.lowercase()
+            val contain = playerName.containsWithoutUnderline(input)
+            if (contain == 1) builder.suggest(playerName)
+            else if (contain == -1) lazyList += playerName
+        }
+        for (value in lazyList) {
+            builder.suggest(value)
+        }
+        return builder.buildFuture()
+    }
+}
+
+/** 排除开启自动拒绝的玩家的自动补全 */
+object PlayerWithoutRejectSuggestionProvider :
+    PlayerFilterSuggestionProvider({ sourcePlayer, otherPlayer -> sourcePlayer.uuid != otherPlayer.uuid && !otherPlayer.tpmData.autoReject })
+
+/** 排除自身的玩家自动补全 */
+object PlayerWithoutSelfSuggestionProvider : PlayerFilterSuggestionProvider({ sourcePlayer, otherPlayer -> sourcePlayer.uuid != otherPlayer.uuid })
+
+/** 玩家自动补全 */
+object PlayerSuggestionProvider : PlayerFilterSuggestionProvider({ _, _ -> true })

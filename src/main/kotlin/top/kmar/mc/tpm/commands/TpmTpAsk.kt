@@ -14,6 +14,8 @@ import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.TpRequestManager
 import top.kmar.mc.tpm.commands.TpmCommand.clickableButton
 import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
+import top.kmar.mc.tpm.commands.config.PlayerWithoutRejectSuggestionProvider
+import top.kmar.mc.tpm.commands.config.PlayerWithoutSelfSuggestionProvider
 import top.kmar.mc.tpm.save.tpmData
 
 object TpmTpAsk {
@@ -23,6 +25,7 @@ object TpmTpAsk {
             literal("tpa").then(
                 TpmCommand.joinArguments(
                 argument("player", EntityArgument.player())
+                    .suggests(PlayerWithoutRejectSuggestionProvider)
                     .executes { context -> executeTpaCommand(context, false) },
                 argument("force", BoolArgumentType.bool())
                     .executes { context ->
@@ -35,6 +38,7 @@ object TpmTpAsk {
             literal("tphere").then(
                 TpmCommand.joinArguments(
                 argument("player", EntityArgument.player())
+                    .suggests(PlayerWithoutRejectSuggestionProvider)
                     .executes { context -> executeTphereCommand(context, false) },
                 argument("force", BoolArgumentType.bool())
                     .executes { context ->
@@ -56,6 +60,7 @@ object TpmTpAsk {
                 1
             }.then(
                 argument("player", EntityArgument.player())
+                    .suggests(PlayerWithoutSelfSuggestionProvider)
                     .executes { context ->
                         val player = context.source.playerOrException
                         val otherPlayer = EntityArgument.getPlayer(context, "player")
@@ -82,6 +87,7 @@ object TpmTpAsk {
                 1
             }.then(
                 argument("player", EntityArgument.player())
+                    .suggests(PlayerWithoutSelfSuggestionProvider)
                     .executes { context ->
                         val player = context.source.playerOrException
                         val otherPlayer = EntityArgument.getPlayer(context, "player")

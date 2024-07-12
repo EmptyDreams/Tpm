@@ -8,11 +8,8 @@ import net.minecraft.commands.arguments.DimensionArgument
 import net.minecraft.commands.arguments.EntityArgument
 import net.minecraft.network.chat.Component
 import top.kmar.mc.tpm.Tpm
-import top.kmar.mc.tpm.commands.config.ConfigRegister
+import top.kmar.mc.tpm.commands.config.*
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
-import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
-import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
-import top.kmar.mc.tpm.commands.config.WorldSuggestionProvider
 import top.kmar.mc.tpm.data.DoubleBlockPos
 import top.kmar.mc.tpm.permissions
 import top.kmar.mc.tpm.save.DefaultConfigData
@@ -61,6 +58,7 @@ object TpmTpManager {
         this["person"] = ConfigValue(
             commands = { it, _ ->
                 var root = argument("tpm_player", EntityArgument.player())
+                    .suggests(PlayerSuggestionProvider)
                 TpmTpConfig.configMap.forEach { (key, value) ->
                     root = root.then(value.commands(value, Commands.literal(key)) { context ->
                         val targetPlayer = EntityArgument.getPlayer(context, "tpm_player")
