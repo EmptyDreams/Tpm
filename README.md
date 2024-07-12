@@ -14,7 +14,7 @@
 
 ## 运行环境
 
-+ `minecraft` ~ 1.20.1
++ `minecraft`: ~1.19.2 / ~1.20.1
 + `fabric loader` >= 0.15.11
 + `fabric api` *
 + `fabric language koltin` *
