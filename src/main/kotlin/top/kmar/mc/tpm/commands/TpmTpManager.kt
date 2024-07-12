@@ -12,6 +12,7 @@ import top.kmar.mc.tpm.commands.config.ConfigRegister
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
+import top.kmar.mc.tpm.commands.config.WorldSuggestionProvider
 import top.kmar.mc.tpm.data.DoubleBlockPos
 import top.kmar.mc.tpm.permissions
 import top.kmar.mc.tpm.save.DefaultConfigData
@@ -26,7 +27,7 @@ object TpmTpManager {
                 it.executes { context ->
                     writer(context.source.player, context)
                 }.then(TpmCommand.joinArguments(
-                    argument("level", DimensionArgument.dimension()),
+                    argument("level", DimensionArgument.dimension()).suggests(WorldSuggestionProvider),
                     *TpmCommand.worldPosArgument
                 ) { context -> writer(null, context) })
             },
