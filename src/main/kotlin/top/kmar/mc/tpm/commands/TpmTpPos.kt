@@ -13,6 +13,7 @@ import net.minecraft.commands.arguments.DimensionArgument
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import top.kmar.mc.tpm.arrayMap
 import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos.Companion.teleportTo
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
@@ -34,7 +35,7 @@ object TpmTpPos {
                 1
             }.then(
                 TpmCommand.joinArguments(
-                    *TpmCommand.worldPosArgument, suggestion = DoublePosSuggestionProvider
+                    *(TpmCommand.worldPosArgument.arrayMap { it.suggests(DoublePosSuggestionProvider) })
                 ) { context ->
                     val player = context.source.playerOrException
                     val (x, y, z) = DoubleBlockPos.readFromContext(context)
@@ -49,7 +50,7 @@ object TpmTpPos {
                         val level = DimensionArgument.getDimension(context, "level")
                         player.teleportToMain(level)
                         1
-                    }, *TpmCommand.worldPosArgument
+                    }, *(TpmCommand.worldPosArgument.arrayMap { it.suggests(DoublePosSuggestionProvider) })
                 ) { context ->
                     val player = context.source.playerOrException
                     val (x, y, z) = DoubleBlockPos.readFromContext(context)
@@ -95,23 +96,28 @@ object DoublePosSuggestionProvider : SuggestionProvider<CommandSourceStack> {
         context: CommandContext<CommandSourceStack>, builder: SuggestionsBuilder
     ): CompletableFuture<Suggestions> {
         val player = context.source.playerOrException
-        val input = context.input.lowercase().split(" ").filter { it.isNotEmpty() }
-        if (!context.input.endsWith(' ') || (input.size != 1 && !input[1].all { it == '-' || it == '.' || it.isDigit() })) {
+        val input = context.input.lowercase().split(" ")
+        if (input.isEmpty() || input.last().isNotEmpty()) {
             return builder.buildFuture()
         }
+        // 判断首位参数的是否是维度名称
+        val isDimFirst = input[1].any { it != '-' && it != '.' && !it.isDigit() }
+        if (isDimFirst && input.size == 1) return builder.buildFuture()
+        // 偏移量，当第一位输入的是维度名称时向后偏移 1
+        val offset = if (isDimFirst) 1 else 0
         when (input.size) {
-            1 -> {
+            offset + 2 -> {
                 builder.suggest(player.x.formatToString())
                 builder.suggest("${player.x.formatToString()} ${player.y.formatToString()}")
                 builder.suggest("${player.x.formatToString()} ${player.y.formatToString()} ${player.z.formatToString()}")
             }
 
-            2 -> {
+            offset + 3 -> {
                 builder.suggest(player.y.formatToString())
                 builder.suggest("${player.y.formatToString()} ${player.z.formatToString()}")
             }
 
-            3 -> {
+            offset + 4 -> {
                 builder.suggest(player.z.formatToString())
             }
         }

@@ -23,3 +23,12 @@ val ServerPlayer.permissions: Int
 fun Double.formatToString(decimalPlaces: Int = 2): String {
     return "%.${decimalPlaces}f".format(this)
 }
+
+inline fun <T, reified R> Array<T>.arrayMap(transform: (T) -> R): Array<R> {
+    @Suppress("UNCHECKED_CAST")
+    val cpy = java.lang.reflect.Array.newInstance(R::class.java, size) as Array<R>
+    for (index in this.indices) {
+        cpy[index] = transform(this[index])
+    }
+    return cpy
+}

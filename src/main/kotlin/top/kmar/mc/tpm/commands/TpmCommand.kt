@@ -4,7 +4,6 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
-import com.mojang.brigadier.suggestion.SuggestionProvider
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
@@ -92,19 +91,13 @@ object TpmCommand {
     @JvmStatic
     internal fun joinArguments(
         vararg argList: RequiredArgumentBuilder<CommandSourceStack, *>,
-        suggestion: SuggestionProvider<CommandSourceStack>? = null,
         command: Command<CommandSourceStack>? = null,
     ): RequiredArgumentBuilder<CommandSourceStack, *> {
         var argument = argList.last()
-        if (suggestion != null) {
-            argument = argument.suggests(suggestion)
-        }
         if (command != null)
             argument = argument.executes(command)
         for (i in argList.lastIndex - 1 downTo 0) {
             argument = argList[i].then(argument)
-            if (suggestion != null)
-                argument = argument.suggests(suggestion)
         }
         return argument
     }
