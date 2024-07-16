@@ -110,8 +110,8 @@ open class PlayerFilterSuggestionProvider(
         val lazyList = ArrayList<String>()
         for (player in playerList) {
             if (!filter(sourcePlayer, player)) continue
-            val playerName = player.gameProfile.name.lowercase()
-            val contain = playerName.containsWithoutUnderline(input)
+            val playerName = player.gameProfile.name
+            val contain = playerName.lowercase().containsWithoutUnderline(input)
             if (contain == 1) builder.suggest(playerName)
             else if (contain == -1) lazyList += playerName
         }
