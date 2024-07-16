@@ -64,15 +64,12 @@ object TpRequestManager {
      */
     @JvmStatic
     fun appendRequest(request: TpRequest, force: Boolean, skipWrite: Boolean = false): Boolean {
-        var isInList: Boolean
-        lock.read {
-            isInList = request in tpRequestList
+        lock.write {
+            val isInList = request in tpRequestList
             if (isInList && !force) {
                 return false
             }
-        }
-        if (!skipWrite || isInList) {
-            lock.write {
+            if (!skipWrite || isInList) {
                 tpRequestList.add(request)
             }
         }
