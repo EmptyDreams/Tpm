@@ -72,14 +72,15 @@ object WorldSuggestionProvider : SuggestionProvider<CommandSourceStack> {
         val levels = context.source.server.allLevels
         val input = context.input.substringAfterLast(' ', "").lowercase().split(":")
         val lazyList = ArrayList<String>(2)
-        if (input.size != 2) {
+        if (input.size != 2) {  // 没有输入冒号
             for (level in levels) {
                 val location = level.dimension().location()
                 val contain = location.path.containsWithoutUnderline(input[0])
                 if (contain == 1) builder.suggest(location.toString())
                 else if (contain == -1) lazyList += location.toString()
+                else if (location.namespace.containsWithoutUnderline(input[0]) != 0) lazyList += location.toString()
             }
-        } else {
+        } else {                // 输入了冒号
             for (level in levels) {
                 val location = level.dimension().location()
                 if (location.namespace != input[0]) continue
