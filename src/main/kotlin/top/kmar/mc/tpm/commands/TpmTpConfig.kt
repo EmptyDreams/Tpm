@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component
 import top.kmar.mc.tpm.commands.config.BooleanConfig
 import top.kmar.mc.tpm.commands.config.ConfigRegister
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
-import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
+import top.kmar.mc.tpm.data.DimensionalBlockPos
 import top.kmar.mc.tpm.data.DoubleBlockPos
 import top.kmar.mc.tpm.save.tpmData
 

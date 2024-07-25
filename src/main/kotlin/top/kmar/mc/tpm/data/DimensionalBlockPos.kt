@@ -1,4 +1,4 @@
-package top.kmar.mc.tpm.commands.config
+package top.kmar.mc.tpm.data
 
 import com.google.gson.JsonElement
 import net.minecraft.ChatFormatting

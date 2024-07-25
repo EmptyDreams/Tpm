@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component
 import top.kmar.mc.tpm.Tpm
 import top.kmar.mc.tpm.commands.config.*
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
+import top.kmar.mc.tpm.data.DimensionalBlockPos
 import top.kmar.mc.tpm.data.DoubleBlockPos
 import top.kmar.mc.tpm.permissions
 import top.kmar.mc.tpm.save.DefaultConfigData

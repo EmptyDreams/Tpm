@@ -3,7 +3,7 @@ package top.kmar.mc.tpm.commands
 import com.mojang.brigadier.CommandDispatcher
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
-import top.kmar.mc.tpm.commands.config.DimensionalBlockPos.Companion.teleportTo
+import top.kmar.mc.tpm.data.DimensionalBlockPos.Companion.teleportTo
 import top.kmar.mc.tpm.save.tpmData
 
 object TpmTpHome {

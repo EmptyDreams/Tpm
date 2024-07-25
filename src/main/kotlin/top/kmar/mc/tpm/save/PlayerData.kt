@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.commands.config.BooleanConfig
-import top.kmar.mc.tpm.commands.config.DimensionalBlockPos
+import top.kmar.mc.tpm.data.DimensionalBlockPos
 
 /**
  * 玩家的离线数据，该对象不会被缓存，每次调用将返回一个新的对象

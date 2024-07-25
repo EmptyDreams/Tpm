@@ -11,7 +11,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.arrayMap
 import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
-import top.kmar.mc.tpm.commands.config.DimensionalBlockPos.Companion.teleportTo
+import top.kmar.mc.tpm.data.DimensionalBlockPos.Companion.teleportTo
 import top.kmar.mc.tpm.commands.config.DoublePosSuggestionProvider
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
 import top.kmar.mc.tpm.commands.config.SuggestionProvidersConnector

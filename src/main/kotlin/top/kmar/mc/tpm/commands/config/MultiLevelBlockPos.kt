@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
+import top.kmar.mc.tpm.data.DimensionalBlockPos
 import top.kmar.mc.tpm.save.TpmWorldData
 
 data class MultiLevelBlockPos(
