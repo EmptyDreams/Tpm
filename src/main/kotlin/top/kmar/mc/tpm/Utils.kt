@@ -2,6 +2,7 @@ package top.kmar.mc.tpm
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import java.text.DecimalFormat
@@ -55,4 +56,8 @@ fun String.containsWithoutUnderline(other: String): Int {
     if (contains(other)) return 1
     if (replace("_", "").contains(other)) return -1
     return 0
+}
+
+fun MinecraftServer.findLevel(location: ResourceLocation): ServerLevel? {
+    return allLevels.find { it.dimension().location() == location }
 }

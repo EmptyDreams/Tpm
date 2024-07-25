@@ -8,10 +8,13 @@ import net.minecraft.commands.arguments.DimensionArgument
 import net.minecraft.commands.arguments.EntityArgument
 import net.minecraft.network.chat.Component
 import top.kmar.mc.tpm.Tpm
-import top.kmar.mc.tpm.commands.config.*
+import top.kmar.mc.tpm.commands.config.ConfigRegister
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
-import top.kmar.mc.tpm.data.DimensionalBlockPos
+import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
+import top.kmar.mc.tpm.commands.config.PlayerSuggestionProvider
+import top.kmar.mc.tpm.commands.config.WorldSuggestionProvider
 import top.kmar.mc.tpm.data.DoubleBlockPos
+import top.kmar.mc.tpm.data.PlayerBlockPos
 import top.kmar.mc.tpm.permissions
 import top.kmar.mc.tpm.save.DefaultConfigData
 import top.kmar.mc.tpm.save.TpmWorldData
@@ -43,12 +46,12 @@ object TpmTpManager {
             writer = { player, context ->
                 val pos = if (player != null) {
                     player.sendSystemMessage(TpmCommand.grayText("已将世界主城设置到当前位置"))
-                    DimensionalBlockPos(player.serverLevel(), player.x, player.y + 0.5, player.z)
+                    PlayerBlockPos(player)
                 } else {
                     Tpm.logger.info("已将世界主城设置到指定位置")
                     val level = DimensionArgument.getDimension(context, "level")
                     val (x, y, z) = DoubleBlockPos.readFromContext(context)
-                    DimensionalBlockPos(level, x, y, z)
+                    PlayerBlockPos(level.dimension().location(), x, y, z, 0f, 0f)
                 }
                 val posList = TpmWorldData.get("main", MultiLevelBlockPos.builder) ?: MultiLevelBlockPos()
                 posList.put(pos)

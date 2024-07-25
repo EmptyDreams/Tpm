@@ -10,6 +10,7 @@ import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
+import top.kmar.mc.tpm.findLevel
 import top.kmar.mc.tpm.getLevelLocalName
 import top.kmar.mc.tpm.save.TpmWorldData
 
@@ -23,7 +24,7 @@ data class DimensionalBlockPos(
     constructor(level: ServerLevel, x: Double, y: Double, z: Double) : this(level.dimension().location(), x, y, z)
 
     fun serverLevel(server: MinecraftServer): ServerLevel {
-        return server.allLevels.find { it.dimension().location() == level }!!
+        return server.findLevel(level)!!
     }
 
     override fun saveTo(compoundTag: CompoundTag) {

@@ -11,12 +11,12 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.arrayMap
 import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
-import top.kmar.mc.tpm.data.DimensionalBlockPos.Companion.teleportTo
 import top.kmar.mc.tpm.commands.config.DoublePosSuggestionProvider
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
 import top.kmar.mc.tpm.commands.config.SuggestionProvidersConnector
 import top.kmar.mc.tpm.commands.config.WorldSuggestionProvider
 import top.kmar.mc.tpm.data.DoubleBlockPos
+import top.kmar.mc.tpm.data.PlayerBlockPos.Companion.teleportTo
 import top.kmar.mc.tpm.localName
 import top.kmar.mc.tpm.save.TpmWorldData
 

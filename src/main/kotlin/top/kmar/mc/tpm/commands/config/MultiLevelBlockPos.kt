@@ -4,22 +4,22 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
-import top.kmar.mc.tpm.data.DimensionalBlockPos
+import top.kmar.mc.tpm.data.PlayerBlockPos
 import top.kmar.mc.tpm.save.TpmWorldData
 
 data class MultiLevelBlockPos(
-    private val dataCollection: MutableList<DimensionalBlockPos> = ArrayList(3)
-) : TpmWorldData.NBTSerializable, Iterable<DimensionalBlockPos> {
+    private val dataCollection: MutableList<PlayerBlockPos> = ArrayList(3)
+) : TpmWorldData.NBTSerializable, Iterable<PlayerBlockPos> {
 
-    fun get(level: ServerLevel): DimensionalBlockPos? {
+    fun get(level: ServerLevel): PlayerBlockPos? {
         return get(level.dimension().location())
     }
 
-    fun get(location: ResourceLocation): DimensionalBlockPos? {
+    fun get(location: ResourceLocation): PlayerBlockPos? {
         return dataCollection.find { it.level == location }
     }
 
-    fun put(pos: DimensionalBlockPos) {
+    fun put(pos: PlayerBlockPos) {
         val index = dataCollection.indexOfLast { it.level == pos.level }
         if (index == -1) {
             dataCollection += pos
@@ -40,7 +40,7 @@ data class MultiLevelBlockPos(
         }
     }
 
-    override fun iterator(): Iterator<DimensionalBlockPos> {
+    override fun iterator(): Iterator<PlayerBlockPos> {
         return dataCollection.iterator()
     }
 
@@ -53,7 +53,7 @@ data class MultiLevelBlockPos(
                 val result = MultiLevelBlockPos()
                 for (i in 0 until compound.size()) {
                     val sonCompound = compound.getCompound(i.toString())
-                    val pos = DimensionalBlockPos.buildFrom(sonCompound)
+                    val pos = PlayerBlockPos.buildFrom(sonCompound)
                     result.put(pos)
                 }
                 result
