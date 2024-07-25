@@ -4,11 +4,17 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import java.text.DecimalFormat
 
 private val levelLocalNameMap = Object2ObjectArrayMap<ResourceLocation, String>(3).apply {
     put(ResourceLocation("minecraft", "overworld"), "flat_world_preset.minecraft.overworld")
     put(ResourceLocation("minecraft", "the_end"), "advancements.end.root.title")
     put(ResourceLocation("minecraft", "the_nether"), "advancements.nether.root.title")
+}
+
+private val decimalFormat = DecimalFormat("#.##").apply {
+    minimumFractionDigits = 0
+    maximumFractionDigits = 2
 }
 
 fun getLevelLocalName(level: ResourceLocation) =
@@ -20,8 +26,8 @@ val ServerLevel.localName: String
 val ServerPlayer.permissions: Int
     get() = server.getProfilePermissions(gameProfile)
 
-fun Double.formatToString(decimalPlaces: Int = 2): String {
-    return "%.${decimalPlaces}f".format(this)
+fun Double.formatToString(): String {
+    return decimalFormat.format(this)
 }
 
 inline fun <T, reified R> Array<T>.arrayMap(transform: (T, Int) -> R): Array<R> {
