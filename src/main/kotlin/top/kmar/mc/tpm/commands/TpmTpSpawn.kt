@@ -4,7 +4,9 @@ import com.mojang.brigadier.CommandDispatcher
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
+import net.minecraft.world.entity.player.Player
 import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
+import kotlin.jvm.optionals.getOrNull
 
 object TpmTpSpawn {
 
@@ -17,9 +19,13 @@ object TpmTpSpawn {
                 if (respawnPos != null) {
                     val respawnLevel = player.server.getLevel(respawnDimension)
                     if (respawnLevel != null) {
-                        player.tpmTp(respawnLevel, respawnPos)
-                        player.sendSystemMessage(TpmCommand.grayText("已将您传送到重生点"))
-                        return@executes 1
+                        Player.findRespawnPositionAndUseSpawnBlock(
+                            respawnLevel, respawnPos, player.respawnAngle, player.isRespawnForced, player.isAlive
+                        ).getOrNull()?.let { pos ->
+                            player.tpmTp(pos.x, pos.y, pos.z, level = respawnLevel)
+                            player.sendSystemMessage(TpmCommand.grayText("已将您传送到重生点"))
+                            return@executes 1
+                        }
                     }
                 }
                 val overworld = player.server.overworld()
