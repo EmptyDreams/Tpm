@@ -13,7 +13,7 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.TpRequestManager
 import top.kmar.mc.tpm.commands.TpmCommand.clickableButton
-import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
+import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
 import top.kmar.mc.tpm.commands.config.PlayerWithoutRejectSuggestionProvider
 import top.kmar.mc.tpm.commands.config.PlayerWithoutSelfSuggestionProvider
 import top.kmar.mc.tpm.save.tpmData
@@ -220,7 +220,7 @@ object TpmTpAsk {
             return 1
         }
         if (autoAccept) {
-            player.teleportTo(targetPlayer)
+            player.tpmTp(targetPlayer)
         } else {
             player.sendSystemMessage(
                 Component.literal("正在请求传送到 ")

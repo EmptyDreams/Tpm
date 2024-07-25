@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
-import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
+import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
 
 object TpmTpSpawn {
 
@@ -17,7 +17,7 @@ object TpmTpSpawn {
                 if (respawnPos != null) {
                     val respawnLevel = player.server.getLevel(respawnDimension)
                     if (respawnLevel != null) {
-                        player.teleportTo(respawnLevel, respawnPos)
+                        player.tpmTp(respawnLevel, respawnPos)
                         player.sendSystemMessage(TpmCommand.grayText("已将您传送到重生点"))
                         return@executes 1
                     }

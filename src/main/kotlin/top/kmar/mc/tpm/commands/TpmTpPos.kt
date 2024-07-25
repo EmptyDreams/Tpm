@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.arrayMap
-import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
+import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
 import top.kmar.mc.tpm.commands.config.DimensionalBlockPos.Companion.teleportTo
 import top.kmar.mc.tpm.commands.config.DoublePosSuggestionProvider
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
@@ -39,7 +39,7 @@ object TpmTpPos {
                 ) { context ->
                     val player = context.source.playerOrException
                     val (x, y, z) = DoubleBlockPos.readFromContext(context)
-                    player.teleportTo(x, y, z)
+                    player.tpmTp(x, y, z)
                     player.sendSystemMessage(TpmCommand.grayText("成功传送到 $x $y $z"))
                     1
                 }
@@ -59,7 +59,7 @@ object TpmTpPos {
                     if (serverLevel == null) {
                         player.sendSystemMessage(TpmCommand.errorText("输入的维度不存在"))
                     } else {
-                        player.teleportTo(serverLevel, x, y, z, player.yRot, player.xRot)
+                        player.tpmTp(x, y, z, level = serverLevel)
                         player.sendSystemMessage(
                             Component.literal("成功传送到 ").append(Component.translatable(serverLevel.localName))
                                 .append(" $x $y $z").withStyle(ChatFormatting.GRAY)
@@ -81,7 +81,7 @@ object TpmTpPos {
                 sendSystemMessage(TpmCommand.grayText("暂无可用主城"))
                 return
             }
-            teleportTo(level, sharedPos)
+            tpmTp(level, sharedPos)
             sendSystemMessage(TpmCommand.grayText("已将您传送到世界出生点"))
         } else {
             teleportTo(pos)

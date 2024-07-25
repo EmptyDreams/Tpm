@@ -104,11 +104,11 @@ object TpmCommand {
 
     /** 将当前玩家传送到指定玩家 */
     @JvmStatic
-    internal fun ServerPlayer.teleportTo(targetPlayer: ServerPlayer) {
-        teleportTo(
-            targetPlayer.serverLevel(),
+    internal fun ServerPlayer.tpmTp(targetPlayer: ServerPlayer) {
+        this.tpmTp(
             targetPlayer.x, targetPlayer.y, targetPlayer.z,
-            targetPlayer.yRot, targetPlayer.xRot
+            targetPlayer.yRot, targetPlayer.xRot,
+            targetPlayer.serverLevel()
         )
         sendSystemMessage(
             Component.literal("已将您传送到 ")
@@ -125,8 +125,24 @@ object TpmCommand {
 
     /** 将玩家传送到指定世界的指定坐标 */
     @JvmStatic
-    internal fun ServerPlayer.teleportTo(level: ServerLevel, pos: BlockPos) {
-        teleportTo(level, pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), yRot, xRot)
+    internal fun ServerPlayer.tpmTp(level: ServerLevel, pos: BlockPos) {
+        this.tpmTp(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), level = level)
+    }
+
+    /**
+     * 传送传家到指定位置
+     */
+    @JvmStatic
+    internal fun ServerPlayer.tpmTp(
+        x: Double, y: Double, z: Double,
+        yRot: Float = this.yRot, xRot: Float = this.xRot,
+        level: ServerLevel = this.serverLevel()
+    ) {
+        if (!this.isFallFlying) {
+            deltaMovement = deltaMovement.multiply(1.0, 0.0, 1.0)
+            setOnGround(true)
+        }
+        teleportTo(level, x, y, z, yRot, xRot)
     }
 
 }

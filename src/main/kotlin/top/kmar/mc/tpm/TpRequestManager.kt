@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_S
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.Tpm.logger
 import top.kmar.mc.tpm.commands.TpmCommand
-import top.kmar.mc.tpm.commands.TpmCommand.teleportTo
+import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -125,7 +125,7 @@ object TpRequestManager {
     fun acceptRequests(requests: List<TpRequest>) {
         removeAllRequests(requests)
         for (request in requests) {
-            request.srcPlayer.teleportTo(request.targetPlayer)
+            request.srcPlayer.tpmTp(request.targetPlayer)
             request.acceptEvent?.invoke(request)
         }
     }
@@ -148,7 +148,7 @@ object TpRequestManager {
             lock.write {
                 tpRequestList.remove(this)
             }
-            srcPlayer.teleportTo(targetPlayer)
+            srcPlayer.tpmTp(targetPlayer)
             acceptEvent?.invoke(this)
         }
 

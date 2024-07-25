@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
 import top.kmar.mc.tpm.getLevelLocalName
 import top.kmar.mc.tpm.save.TpmWorldData
 
@@ -76,7 +77,7 @@ data class DimensionalBlockPos(
 
         @JvmStatic
         fun ServerPlayer.teleportTo(pos: DimensionalBlockPos) {
-            teleportTo(pos.serverLevel(server), pos.x, pos.y, pos.z, yRot, xRot)
+            tpmTp(pos.x, pos.y, pos.z, level = pos.serverLevel(server))
         }
 
     }
