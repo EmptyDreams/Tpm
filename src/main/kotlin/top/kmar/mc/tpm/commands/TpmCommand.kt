@@ -142,7 +142,6 @@ object TpmCommand {
             deltaMovement = deltaMovement.multiply(1.0, 0.0, 1.0)
             setOnGround(true)
         }
-        println("$yRot!$xRot")
         teleportTo(level, x, y, z, yRot, xRot)
     }
 
