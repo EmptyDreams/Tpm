@@ -82,9 +82,9 @@ object TpmCommand {
     @JvmStatic
     internal val worldPosArgument: Array<RequiredArgumentBuilder<CommandSourceStack, *>>
         get() = arrayOf(
-            Commands.argument("x", DoubleArgumentType.doubleArg()),
-            Commands.argument("y", DoubleArgumentType.doubleArg()),
-            Commands.argument("z", DoubleArgumentType.doubleArg())
+            Commands.argument("x", DoubleArgumentType.doubleArg(-29999983.0, 29999983.0)),
+            Commands.argument("y", DoubleArgumentType.doubleArg(-1000.0, 1000.0)),
+            Commands.argument("z", DoubleArgumentType.doubleArg(-29999983.0, 29999983.0))
         )
 
     /** 构建一条指令 */
