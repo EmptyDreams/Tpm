@@ -17,6 +17,7 @@ import top.kmar.mc.tpm.commands.config.SuggestionProvidersConnector
 import top.kmar.mc.tpm.commands.config.WorldSuggestionProvider
 import top.kmar.mc.tpm.data.DoubleBlockPos
 import top.kmar.mc.tpm.data.PlayerBlockPos.Companion.teleportTo
+import top.kmar.mc.tpm.formatToString
 import top.kmar.mc.tpm.localName
 import top.kmar.mc.tpm.save.TpmWorldData
 
@@ -40,7 +41,7 @@ object TpmTpPos {
                     val player = context.source.playerOrException
                     val (x, y, z) = DoubleBlockPos.readFromContext(context)
                     player.tpmTp(x, y, z)
-                    player.sendSystemMessage(TpmCommand.grayText("成功传送到 $x $y $z"))
+                    player.sendSystemMessage(TpmCommand.grayText("成功传送到 ${x.formatToString()} ${y.formatToString()} ${z.formatToString()}"))
                     1
                 }
             ).then(
@@ -62,7 +63,7 @@ object TpmTpPos {
                         player.tpmTp(x, y, z, level = serverLevel)
                         player.sendSystemMessage(
                             Component.literal("成功传送到 ").append(Component.translatable(serverLevel.localName))
-                                .append(" $x $y $z").withStyle(ChatFormatting.GRAY)
+                                .append(" ${x.formatToString()} ${y.formatToString()} ${z.formatToString()}").withStyle(ChatFormatting.GRAY)
                         )
                     }
                     1

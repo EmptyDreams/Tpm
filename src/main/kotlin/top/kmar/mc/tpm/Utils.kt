@@ -13,9 +13,10 @@ private val levelLocalNameMap = Object2ObjectArrayMap<ResourceLocation, String>(
     put(ResourceLocation("minecraft", "the_nether"), "advancements.nether.root.title")
 }
 
-private val decimalFormat = DecimalFormat("#.##").apply {
+private val decimalFormat = DecimalFormat().apply {
     minimumFractionDigits = 0
     maximumFractionDigits = 2
+    groupingSize = 0
 }
 
 /** 获取维度的 I18n 的 key */
