@@ -14,7 +14,7 @@ val ServerPlayer.tpmData: TpmPlayerDataMap
 
 /** 写入离线数据 */
 fun ServerPlayer.setTpmOfflineData(key: String, value: TpmWorldData.NBTSerializable?) {
-    val realKey = "p-$uuid-$key"
+    val realKey = "p-$stringUUID-$key"
     if (value == null) TpmWorldData.remove(realKey)
     else TpmWorldData[realKey] = value
 }
@@ -23,7 +23,7 @@ fun ServerPlayer.setTpmOfflineData(key: String, value: TpmWorldData.NBTSerializa
 fun <T : TpmWorldData.NBTSerializable> ServerPlayer.readTpmOfflineData(
     key: String, builder: (MinecraftServer, CompoundTag?) -> T?
 ): T? {
-    val realKey = "p-$uuid-$key"
+    val realKey = "p-$stringUUID-$key"
     return TpmWorldData.get(realKey) { server, compoundTag ->
         builder(server, compoundTag ?: DefaultConfigData.readDefault(this, key))
     }
