@@ -2,12 +2,11 @@ package top.kmar.mc.tpm.save
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
+import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.MinecraftServer
 import net.minecraft.world.level.saveddata.SavedData
 import net.minecraft.world.level.storage.DimensionDataStorage
-import java.util.function.Function
-import java.util.function.Supplier
 
 object TpmWorldData : SavedData() {
 
@@ -20,70 +19,13 @@ object TpmWorldData : SavedData() {
         ServerLifecycleEvents.SERVER_STARTED.register { server ->
             this.server = server
             worldData = server.overworld().dataStorage
-            try {
-                worldData.computeIfAbsent(this::readFrom, { readFrom(null) }, "tpm-data")
-            } catch (_: NoSuchMethodError) {
-                val worldDataClass = worldData::class
-                val typeClass = SavedData::class.nestedClasses.let {
-                    require(it.size == 1) {
-                        """
-                            TPM 不支持当前游戏版本。
-                            this: ${this.javaClass}
-                            worldDataClass: $worldDataClass
-                            allClass: ${it.joinToString(" | ")}
-                        """.trimIndent()
-                    }
-                    it.first()
-                }
-                val constructor = typeClass.constructors.let {
-                    require(it.size == 1) {
-                        """
-                            TPM 不支持当前游戏版本。
-                            this: ${this.javaClass}
-                            worldDataClass: $worldDataClass
-                            typeClass: $typeClass
-                            constructors: ${it.joinToString(" | ")}
-                        """.trimIndent()
-                    }
-                    it.first()
-                }
-                val typeObj = constructor.call(
-                    Supplier { readFrom(null) },
-                    Function<CompoundTag, TpmWorldData> { readFrom(it) },
-                    null
-                )
-                val methodList = worldDataClass.java.methods.asSequence()
-                    .filter { it.parameterCount == 2 }
-                    .filter { it.parameterTypes[1] === String::class.java && it.parameterTypes[0] === typeClass.java }
-                    .toList()
-                require(methodList.isNotEmpty()) {
-                    """
-                        TPM 不支持当前游戏版本。
-                        this: ${this.javaClass}
-                        worldDataClass: $worldDataClass
-                        typeClass: $typeClass
-                        allMethods: ${worldDataClass.java.methods.joinToString(" | ") { it.toString() }}
-                    """.trimIndent()
-                }
-                try {
-                    for (method in methodList) {
-                        val result = method.invoke(worldData, typeObj, "tpm-data")
-                        if (result != null) return@register
-                    }
-                    throw AssertionError("代码进入了不应当进入的分支")
-                } catch (e: Throwable) {
-                    throw RuntimeException(
-                        """
-                            TPM 不支持当前游戏版本。
-                            this: ${this.javaClass}
-                            worldDataClass: $worldDataClass
-                            typeClass: $typeClass
-                            getterList: ${methodList.joinToString(" | ") { it.toString() }}
-                            allMethods: ${worldDataClass.java.methods.joinToString(" | ") { it.toString() }}
-                        """.trimIndent(), e
-                    )
-                }
-            }
+            @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+            val factory = Factory(
+                { readFrom(null) },
+                { it, _ -> readFrom(it) },
+                null
+            )
+            worldData.computeIfAbsent(factory, "tpm-data")
         }
     }
 
@@ -112,7 +54,10 @@ object TpmWorldData : SavedData() {
         compoundTag.remove(key)
     }
 
-    override fun save(compoundTag: CompoundTag): CompoundTag {
+    override fun save(
+        compoundTag: CompoundTag,
+        provider: HolderLookup.Provider
+    ): CompoundTag {
         compoundTag.put("tpm", this.compoundTag)
         return compoundTag
     }

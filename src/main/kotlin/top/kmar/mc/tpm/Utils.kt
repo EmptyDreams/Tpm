@@ -8,9 +8,9 @@ import net.minecraft.server.level.ServerPlayer
 import java.text.DecimalFormat
 
 private val levelLocalNameMap = Object2ObjectArrayMap<ResourceLocation, String>(3).apply {
-    put(ResourceLocation("minecraft", "overworld"), "flat_world_preset.minecraft.overworld")
-    put(ResourceLocation("minecraft", "the_end"), "advancements.end.root.title")
-    put(ResourceLocation("minecraft", "the_nether"), "advancements.nether.root.title")
+    put(ResourceLocation.fromNamespaceAndPath("minecraft", "overworld"), "flat_world_preset.minecraft.overworld")
+    put(ResourceLocation.fromNamespaceAndPath("minecraft", "the_end"), "advancements.end.root.title")
+    put(ResourceLocation.fromNamespaceAndPath("minecraft", "the_nether"), "advancements.nether.root.title")
 }
 
 private val decimalFormat = DecimalFormat().apply {
@@ -37,7 +37,7 @@ fun Double.formatToString(): String {
 }
 
 /**
- * 数组的 map，功能同 [List.map]
+ * 数组的 map
  *
  * 警告：该函数使用了反射，存在性能问题，仅适用于对性能要求不高的场景
  */

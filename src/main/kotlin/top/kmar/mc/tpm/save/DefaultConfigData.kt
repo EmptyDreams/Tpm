@@ -11,6 +11,7 @@ import top.kmar.mc.tpm.commands.TpmTpConfig
 import java.nio.file.Files
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.io.path.exists
 
 object DefaultConfigData {
 
@@ -22,10 +23,10 @@ object DefaultConfigData {
         map.clear()
         val file = server.getFile("config/tpm.json")
         if (file.exists()) {
-            val text = Files.readString(file.toPath())
+            val text = Files.readString(file.toAbsolutePath())
             val json = try {
                 JsonParser.parseString(text).asJsonObject
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Tpm.logger.error("配置文件语法或格式错误")
                 return
             }
@@ -37,7 +38,7 @@ object DefaultConfigData {
             }
             Tpm.logger.info("配置文件加载完毕")
         } else {
-            Files.writeString(file.toPath(), """
+            Files.writeString(file.toAbsolutePath(), """
                 {
                     "version": 1,
                     "default": {
@@ -68,7 +69,7 @@ object DefaultConfigData {
                 }
                 val regex = try {
                     Regex(obj["regex"].asString, regexOption)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     Tpm.logger.error("配置文件中存在错误的正则表达式：default.${key}.regex")
                     continue
                 }

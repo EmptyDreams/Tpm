@@ -1,9 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'fabric-loom' version '1.9-SNAPSHOT'
     id 'maven-publish'
-    id "org.jetbrains.kotlin.jvm" version "2.0.0"
+    id "org.jetbrains.kotlin.jvm" version "2.1.10"
 }
 
 version = project.mod_version
@@ -19,9 +19,6 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
-    maven {
-        url 'https://repository.hanbings.io/proxy'
-    }
 }
 
 loom {
@@ -57,7 +54,7 @@ processResources {
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_17
+        jvmTarget = JvmTarget.JVM_21
         freeCompilerArgs.addAll(
                 "-Xjvm-default=all",        // 接口 default 方法
                 "-Xlambdas=indy",           // indy
@@ -72,18 +69,13 @@ java {
     // If you remove this line, sources will not be generated.
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-
-    compileJava {
-        options.release = 17
-        options.encoding = "UTF-8"
-    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.base.archivesName.get()}" }
+        rename { "${it}_${project.base.archivesName.get()}"}
     }
 }
 

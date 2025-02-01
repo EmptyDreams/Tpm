@@ -63,7 +63,7 @@ data class PlayerBlockPos(
             val xRot = compoundTag.getFloat("xr")
             val dn = compoundTag.getString("dn")
             val dp = compoundTag.getString("dp")
-            val location = ResourceLocation(dn, dp)
+            val location = ResourceLocation.fromNamespaceAndPath(dn, dp)
             return PlayerBlockPos(location, x, y, z, yRot, xRot)
         }
 

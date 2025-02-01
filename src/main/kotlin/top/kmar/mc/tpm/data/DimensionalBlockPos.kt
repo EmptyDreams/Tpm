@@ -55,7 +55,7 @@ data class DimensionalBlockPos(
             require(json.isJsonArray) { IllegalArgumentException("传入的参数应当为数组") }
             val array = json.asJsonArray
             require(array.size() == 4) { IllegalArgumentException("数组格式应当为：[level, x, y, z]") }
-            val level = server.allLevels.find { it.dimension().location() == ResourceLocation(array[0].asString) }
+            val level = server.allLevels.find { it.dimension().location() == ResourceLocation.parse(array[0].asString) }
                 ?: throw IllegalArgumentException("传入的维度不存在：$array[0]")
             val x = array[1].asDouble
             val y = array[2].asDouble
@@ -72,7 +72,7 @@ data class DimensionalBlockPos(
             val z = compoundTag.getDouble("z")
             val dn = compoundTag.getString("dn")
             val dp = compoundTag.getString("dp")
-            val location = ResourceLocation(dn, dp)
+            val location = ResourceLocation.fromNamespaceAndPath(dn, dp)
             return DimensionalBlockPos(location, x, y, z)
         }
 
