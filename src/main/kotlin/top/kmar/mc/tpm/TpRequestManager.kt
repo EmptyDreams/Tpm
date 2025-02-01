@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_S
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.Tpm.logger
 import top.kmar.mc.tpm.commands.TpmCommand
+import top.kmar.mc.tpm.commands.TpmCommand.sendTpmMessage
 import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -35,7 +36,7 @@ object TpRequestManager {
                             val timeout = it.timestamp < timestamp
                             if (timeout) {
                                 it.cancelEvent?.invoke(it)
-                                it.sender.sendSystemMessage(TpmCommand.grayText("您的请求已超时取消"))
+                                it.sender.sendTpmMessage(TpmCommand.grayText("您的请求已超时取消"))
                             }
                             timeout
                         }

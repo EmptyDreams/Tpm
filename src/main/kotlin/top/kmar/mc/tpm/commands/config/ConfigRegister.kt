@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.commands.TpmCommand
+import top.kmar.mc.tpm.commands.TpmCommand.sendTpmMessage
 import java.util.concurrent.ConcurrentHashMap
 
 class ConfigRegister(
@@ -59,11 +60,11 @@ class ConfigRegister(
     private fun readConfig(player: ServerPlayer, key: String) {
         val config = configMap[key]
         if (config == null) {
-            player.sendSystemMessage(TpmCommand.errorText("配置名不存在"))
+            player.sendTpmMessage(TpmCommand.errorText("配置名不存在"))
             return
         }
         val data = config.reader!!(player) ?: TpmCommand.grayText("配置项未设置值")
-        player.sendSystemMessage(data)
+        player.sendTpmMessage(data)
     }
 
     data class ConfigValue(

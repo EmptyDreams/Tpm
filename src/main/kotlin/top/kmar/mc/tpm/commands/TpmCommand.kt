@@ -8,12 +8,16 @@ import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.core.BlockPos
+import net.minecraft.network.PacketSendListener
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.level.portal.DimensionTransition
+import net.minecraft.world.phys.Vec3
 
 object TpmCommand {
 
@@ -110,12 +114,12 @@ object TpmCommand {
             targetPlayer.yRot, targetPlayer.xRot,
             targetPlayer.serverLevel()
         )
-        sendSystemMessage(
+        sendTpmMessage(
             Component.literal("已将您传送到 ")
                 .append(targetPlayer.name)
                 .withStyle(ChatFormatting.GRAY)
         )
-        targetPlayer.sendSystemMessage(
+        targetPlayer.sendTpmMessage(
             Component.literal("已将 ")
                 .append(name)
                 .append(" 传送到您")
@@ -142,7 +146,35 @@ object TpmCommand {
             deltaMovement = deltaMovement.multiply(1.0, 0.0, 1.0)
             setOnGround(true)
         }
-        teleportTo(level, x, y, z, yRot, xRot)
+        camera = this
+        stopRiding()
+        if (level === level()) {
+            connection.teleport(x, y, z, yRot, xRot)
+        } else {
+            changeDimension(DimensionTransition(
+                level, Vec3(x, y, z),
+                Vec3.ZERO,
+                yRot, xRot,
+                DimensionTransition.DO_NOTHING
+            ))
+        }
+    }
+
+    @JvmStatic
+    internal fun ServerPlayer.sendTpmMessage(component: Component) {
+        this.connection.send(
+            ClientboundSystemChatPacket(component, false),
+            PacketSendListener.exceptionallySend {
+                val string = component.getString(256)
+                val component2: Component = Component.literal(string).withStyle(ChatFormatting.YELLOW)
+                ClientboundSystemChatPacket(
+                    Component.translatable(
+                        "multiplayer.message_not_delivered",
+                        *arrayOf<Any>(component2)
+                    ).withStyle(ChatFormatting.RED), false
+                )
+            }
+        )
     }
 
 }

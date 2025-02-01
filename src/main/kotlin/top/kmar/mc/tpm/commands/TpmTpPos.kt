@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import top.kmar.mc.tpm.arrayMap
+import top.kmar.mc.tpm.commands.TpmCommand.sendTpmMessage
 import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
 import top.kmar.mc.tpm.commands.config.DoublePosSuggestionProvider
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
@@ -41,7 +42,11 @@ object TpmTpPos {
                     val player = context.source.playerOrException
                     val (x, y, z) = DoubleBlockPos.readFromContext(context)
                     player.tpmTp(x, y, z)
-                    player.sendSystemMessage(TpmCommand.grayText("成功传送到 ${x.formatToString()} ${y.formatToString()} ${z.formatToString()}"))
+                    player.sendTpmMessage(
+                        TpmCommand.grayText(
+                            "成功传送到 ${x.formatToString()} ${y.formatToString()} ${z.formatToString()}"
+                        )
+                    )
                     1
                 }
             ).then(
@@ -58,10 +63,10 @@ object TpmTpPos {
                     val (x, y, z) = DoubleBlockPos.readFromContext(context)
                     val serverLevel = DimensionArgument.getDimension(context, "level")
                     if (serverLevel == null) {
-                        player.sendSystemMessage(TpmCommand.errorText("输入的维度不存在"))
+                        player.sendTpmMessage(TpmCommand.errorText("输入的维度不存在"))
                     } else {
                         player.tpmTp(x, y, z, level = serverLevel)
-                        player.sendSystemMessage(
+                        player.sendTpmMessage(
                             Component.literal("成功传送到 ").append(Component.translatable(serverLevel.localName))
                                 .append(" ${x.formatToString()} ${y.formatToString()} ${z.formatToString()}").withStyle(ChatFormatting.GRAY)
                         )
@@ -79,14 +84,14 @@ object TpmTpPos {
         if (pos == null) {
             val sharedPos = level.sharedSpawnPos
             if (sharedPos.y <= level.minBuildHeight) {
-                sendSystemMessage(TpmCommand.grayText("暂无可用主城"))
+                sendTpmMessage(TpmCommand.grayText("暂无可用主城"))
                 return
             }
             tpmTp(level, sharedPos)
-            sendSystemMessage(TpmCommand.grayText("已将您传送到世界出生点"))
+            sendTpmMessage(TpmCommand.grayText("已将您传送到世界出生点"))
         } else {
             teleportTo(pos)
-            sendSystemMessage(TpmCommand.grayText("已将您传送到世界主城"))
+            sendTpmMessage(TpmCommand.grayText("已将您传送到世界主城"))
         }
     }
 

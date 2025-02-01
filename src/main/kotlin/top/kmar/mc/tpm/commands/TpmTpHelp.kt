@@ -5,6 +5,7 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import top.kmar.mc.tpm.commands.TpmCommand.clickableUrl
 import top.kmar.mc.tpm.commands.TpmCommand.grayText
+import top.kmar.mc.tpm.commands.TpmCommand.sendTpmMessage
 import top.kmar.mc.tpm.commands.TpmCommand.whiteText
 import top.kmar.mc.tpm.commands.TpmCommand.yellowText
 
@@ -34,7 +35,7 @@ object TpmTpHelp {
                             .append(clickableUrl("Github", "https://github.com/EmptyDreams/Tpm#readme"))
                             .append(grayText(" 挖掘更详细的说明吧！"))
                     )
-                    player.sendSystemMessage(message.reduce { acc, value -> acc.append("\n").append(value) })
+                    player.sendTpmMessage(message.reduce { acc, value -> acc.append("\n").append(value) })
                     1
                 }
         )

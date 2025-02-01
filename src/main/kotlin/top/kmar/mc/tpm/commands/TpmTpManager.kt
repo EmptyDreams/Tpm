@@ -8,6 +8,7 @@ import net.minecraft.commands.arguments.DimensionArgument
 import net.minecraft.commands.arguments.EntityArgument
 import net.minecraft.network.chat.Component
 import top.kmar.mc.tpm.Tpm
+import top.kmar.mc.tpm.commands.TpmCommand.sendTpmMessage
 import top.kmar.mc.tpm.commands.config.ConfigRegister
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
 import top.kmar.mc.tpm.commands.config.MultiLevelBlockPos
@@ -45,7 +46,7 @@ object TpmTpManager {
             },
             writer = { player, context ->
                 val pos = if (player != null) {
-                    player.sendSystemMessage(TpmCommand.grayText("已将世界主城设置到当前位置"))
+                    player.sendTpmMessage(TpmCommand.grayText("已将世界主城设置到当前位置"))
                     PlayerBlockPos(player)
                 } else {
                     Tpm.logger.info("已将世界主城设置到指定位置")
@@ -68,7 +69,7 @@ object TpmTpManager {
                         val targetPlayer = EntityArgument.getPlayer(context, "tpm_player")
                         val sourcePlayer = context.source.player
                         if (sourcePlayer != null && sourcePlayer.permissions <= targetPlayer.permissions) {
-                            sourcePlayer.sendSystemMessage(TpmCommand.errorText("您没有权限修改对方的配置"))
+                            sourcePlayer.sendTpmMessage(TpmCommand.errorText("您没有权限修改对方的配置"))
                             return@commands null
                         }
                         targetPlayer
@@ -93,7 +94,7 @@ object TpmTpManager {
                             DefaultConfigData.reloadConfig(server)
                             TpmWorldData.clearCache()
                             if (player == null) Tpm.logger.info("用户缺省配置已重新加载")
-                            else player.sendSystemMessage(TpmCommand.grayText("用户缺省配置已重新加载"))
+                            else player.sendTpmMessage(TpmCommand.grayText("用户缺省配置已重新加载"))
                             1
                         }
                 )

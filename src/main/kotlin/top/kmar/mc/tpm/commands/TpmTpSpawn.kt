@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
+import top.kmar.mc.tpm.commands.TpmCommand.sendTpmMessage
 import top.kmar.mc.tpm.commands.TpmCommand.tpmTp
 
 object TpmTpSpawn {
@@ -22,7 +23,7 @@ object TpmTpSpawn {
                         if (!spawnBlock.missingRespawnBlock) {
                             val pos = spawnBlock.pos
                             player.tpmTp(pos.x, pos.y, pos.z, level = respawnLevel)
-                            player.sendSystemMessage(TpmCommand.grayText("已将您传送到重生点"))
+                            player.sendTpmMessage(TpmCommand.grayText("已将您传送到重生点"))
                             return@executes 1
                         }
                     }
@@ -52,7 +53,7 @@ object TpmTpSpawn {
                             ))
                     }
                 }
-                player.sendSystemMessage(message)
+                player.sendTpmMessage(message)
                 1
             }
         )

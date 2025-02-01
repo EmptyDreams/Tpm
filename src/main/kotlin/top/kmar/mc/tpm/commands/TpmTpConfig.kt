@@ -6,6 +6,7 @@ import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
+import top.kmar.mc.tpm.commands.TpmCommand.sendTpmMessage
 import top.kmar.mc.tpm.commands.config.BooleanConfig
 import top.kmar.mc.tpm.commands.config.ConfigRegister
 import top.kmar.mc.tpm.commands.config.ConfigRegister.ConfigValue
@@ -28,7 +29,7 @@ object TpmTpConfig {
                 } else {
                     it.then(TpmCommand.joinArguments(*TpmCommand.worldPosArgument) { context ->
                         val player = playerGetter(context) ?: return@joinArguments 0
-                        context.source.player?.sendSystemMessage(TpmCommand.grayText("已成功修改目标家的坐标"))
+                        context.source.player?.sendTpmMessage(TpmCommand.grayText("已成功修改目标家的坐标"))
                         writer(player, context)
                     })
                 }
@@ -41,11 +42,11 @@ object TpmTpConfig {
             writer = { player, context ->
                 player!!
                 val pos = if (context.input.endsWith('e')) {
-                    player.sendSystemMessage(TpmCommand.grayText("已将您的家设置到当前位置"))
+                    player.sendTpmMessage(TpmCommand.grayText("已将您的家设置到当前位置"))
                     DimensionalBlockPos(player.serverLevel(), player.x, player.y + 0.5, player.z)
                 } else {
                     val (x, y, z) = DoubleBlockPos.readFromContext(context)
-                    player.sendSystemMessage(TpmCommand.grayText("已将您的家设置到指定位置"))
+                    player.sendTpmMessage(TpmCommand.grayText("已将您的家设置到指定位置"))
                     DimensionalBlockPos(player.serverLevel(), x, y, z)
                 }
                 player.tpmData.home = pos
@@ -62,7 +63,7 @@ object TpmTpConfig {
                                 writer(context.source.playerOrException, context)
                             } else {
                                 val player = playerGetter(context) ?: return@executes 0
-                                context.source.player?.sendSystemMessage(TpmCommand.grayText("已成功修改目标的自动拒绝配置"))
+                                context.source.player?.sendTpmMessage(TpmCommand.grayText("已成功修改目标的自动拒绝配置"))
                                 writer(player, context)
                             }
                         }
@@ -81,13 +82,13 @@ object TpmTpConfig {
                 when {
                     value && playerConfig.autoAccept -> {
                         playerConfig.autoAccept = false
-                        player.sendSystemMessage(TpmCommand.grayText("自动拒绝已启用，自动接受自动关闭"))
+                        player.sendTpmMessage(TpmCommand.grayText("自动拒绝已启用，自动接受自动关闭"))
                     }
                     value -> {
-                        player.run { sendSystemMessage(TpmCommand.grayText("自动拒绝已启用")) }
+                        player.run { sendTpmMessage(TpmCommand.grayText("自动拒绝已启用")) }
                     }
                     else -> {
-                        player.sendSystemMessage(TpmCommand.grayText("自动拒绝已关闭"))
+                        player.sendTpmMessage(TpmCommand.grayText("自动拒绝已关闭"))
                     }
                 }
                 1
@@ -103,7 +104,7 @@ object TpmTpConfig {
                                 writer(context.source.playerOrException, context)
                             } else {
                                 val player = playerGetter(context) ?: return@executes 0
-                                context.source.player?.sendSystemMessage(TpmCommand.grayText("已成功修改目标的自动接受配置"))
+                                context.source.player?.sendTpmMessage(TpmCommand.grayText("已成功修改目标的自动接受配置"))
                                 writer(player, context)
                             }
                         }
@@ -122,13 +123,13 @@ object TpmTpConfig {
                 when {
                     value && playerConfig.autoReject -> {
                         playerConfig.autoReject = false
-                        player.sendSystemMessage(TpmCommand.grayText("自动接受已启用，自动拒绝自动关闭"))
+                        player.sendTpmMessage(TpmCommand.grayText("自动接受已启用，自动拒绝自动关闭"))
                     }
                     value -> {
-                        player.sendSystemMessage(TpmCommand.grayText("自动接受已启用"))
+                        player.sendTpmMessage(TpmCommand.grayText("自动接受已启用"))
                     }
                     else -> {
-                        player.sendSystemMessage(TpmCommand.grayText("自动接受已关闭"))
+                        player.sendTpmMessage(TpmCommand.grayText("自动接受已关闭"))
                     }
                 }
                 1
